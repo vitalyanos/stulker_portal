@@ -89,13 +89,24 @@ $app['allowed_locales'] = $allowed_locales;
 
 $app['twig.options.cache'] = __DIR__ . '/resources/cache/twig';
 
+$base_twig_path = __DIR__ . '/resources/views';
+$theme = array();
+foreach(array_diff(scandir($base_twig_path), array('..', '.')) as $theme_dir){
+    $theme_dir_path = $base_twig_path . '/' . $theme_dir;
+    if (is_dir($theme_dir_path)) {
+        $theme[$theme_dir] = $theme_dir_path . '/';
+    }
+}
+
+$app["themes"] = $theme;
+
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.options' => array(
         'cache' => isset($app['twig.options.cache']) && is_dir($app['twig.options.cache']) && is_writable($app['twig.options.cache']) ? $app['twig.options.cache'] : false,
         'strict_variables' => true,
         'auto_reload' => true
     ),
-    'twig.path' => __DIR__ . '/resources/views',
+    'twig.path' => $base_twig_path,
 ));
 
 $app->register(new ImagineServiceProvider());

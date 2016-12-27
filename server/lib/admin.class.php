@@ -56,6 +56,10 @@ class Admin
         return $this->profile['opinion_form_flag'];
     }
 
+    public function getTheme(){
+        return $this->profile['theme'];
+    }
+
     public static function checkAuthorization($login, $pass) {
 
         $admin = Mysql::getInstance()

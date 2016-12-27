@@ -46,6 +46,8 @@ class BaseStalkerController {
 
     public function __construct(Application $app, $modelName = '') {
         $this->app = $app;
+        getenv('STALKER_ENV');
+
         $this->request = $app['request'];
 
         if (session_id()) {
@@ -114,6 +116,12 @@ class BaseStalkerController {
             $this->setTopBarMenu();
             $this->setBreadcrumbs();
             $this->app['request']->getSession()->set('cached_lang', $this->app['language']);
+            if ($this->admin->getTheme()) {
+                $twig_theme = $this->admin->getTheme();
+            } else {
+                $twig_theme = 'theme1';
+            }
+            $this->app['twig_theme'] = $twig_theme;
         }
 
         if (isset($this->data['set-dropdown-attribute'])) {
@@ -125,7 +133,7 @@ class BaseStalkerController {
     protected function getTemplateName($method_name) {
         $method_name = explode('::', str_replace(array(__NAMESPACE__, '\\'), '', $method_name));
         $method_name[] = end($method_name);
-        return implode('/', $method_name) . ".twig";
+        return $this->app['twig_theme'] . '/' . implode('/', $method_name) . ".twig";
     }
 
     private function getPathInfo() {
