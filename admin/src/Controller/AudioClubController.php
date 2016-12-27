@@ -121,7 +121,7 @@ class AudioClubController extends \Controller\BaseStalkerController {
         $this->app['breadcrumbs']->addItem($this->setLocalization('Albums'), $this->app['controller_alias'] . '/audio-albums');
         $this->app['breadcrumbs']->addItem($this->setLocalization('Edit audio album'));
 
-        return $this->app['twig']->render("AudioClub_add_audio_albums.twig");
+        return $this->app['twig']->render($this->getTemplateName("AudioClub::add_audio_albums"));
     }
     
     public function audio_artists() {

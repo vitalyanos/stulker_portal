@@ -123,7 +123,9 @@ class BaseStalkerController {
     }
 
     protected function getTemplateName($method_name) {
-        return str_replace(array(__NAMESPACE__, '\\', '::'), array('', '', '_'), $method_name) . ".twig";
+        $method_name = explode('::', str_replace(array(__NAMESPACE__, '\\'), '', $method_name));
+        $method_name[] = end($method_name);
+        return implode('/', $method_name) . ".twig";
     }
 
     private function getPathInfo() {
@@ -255,7 +257,7 @@ class BaseStalkerController {
                     $response = $this->generateAjaxResponse(array('msg' => $this->setLocalization('Access denied')), 'Access denied');
                     return new Response(json_encode($response), 403);
                 } else {
-                    return $this->app['twig']->render("AccessDenied.twig");
+                    return $this->app['twig']->render($this->getTemplateName("AccessDenied::index"));
                 }
             }
         }

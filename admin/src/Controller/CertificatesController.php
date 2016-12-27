@@ -210,7 +210,7 @@ class CertificatesController extends \Controller\BaseStalkerController {
 
         $this->app['licsServerErrors'] = $this->licsServerErrors;
 
-        return $this->app['twig']->render('Certificates_certificate_request.twig');
+        return $this->app['twig']->render($this->getTemplateName('Certificates::certificate_request'));
     }
     //----------------------- ajax method --------------------------------------
 

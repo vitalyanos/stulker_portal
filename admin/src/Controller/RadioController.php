@@ -96,7 +96,7 @@ class RadioController extends \Controller\BaseStalkerController {
         $this->app['radioID'] = $id;
         $this->app['radioName'] = $this->radio['name'];
         $this->app['breadcrumbs']->addItem($this->setLocalization('Edit radio'));
-        return $this->app['twig']->render("Radio_add_radio.twig");
+        return $this->app['twig']->render($this->getTemplateName("Radio::add_radio"));
     }
 
     //----------------------- ajax method --------------------------------------

@@ -37,11 +37,11 @@ class ApplicationCatalogController extends \Controller\BaseStalkerController {
 
         $tos = $this->db->getTOS('stalker_apps');
         if (empty($tos)) {
-            return $this->app['twig']->render('ApplicationCatalog_index.twig');
+            return $this->app['twig']->render($this->getTemplateName('ApplicationCatalog::index'));
         } elseif (empty($tos[0]['accepted'])) {
             $this->app['tos'] = $tos[0];
             $this->app['tos_alias'] = 'stalker_apps';
-            return $this->app['twig']->render('ApplicationCatalog_tos.twig');
+            return $this->app['twig']->render($this->getTemplateName('ApplicationCatalog::tos'));
         }
 
         $attribute = $this->getApplicationListDropdownAttribute();
@@ -59,11 +59,11 @@ class ApplicationCatalogController extends \Controller\BaseStalkerController {
 
         $tos = $this->db->getTOS('launcher_apps');
         if (empty($tos)) {
-            return $this->app['twig']->render('ApplicationCatalog_index.twig');
+            return $this->app['twig']->render($this->getTemplateName('ApplicationCatalog::index'));
         } elseif (empty($tos[0]['accepted'])) {
             $this->app['tos'] = $tos[0];
             $this->app['tos_alias'] = 'launcher_apps';
-            return $this->app['twig']->render('ApplicationCatalog_tos.twig');
+            return $this->app['twig']->render($this->getTemplateName('ApplicationCatalog::tos'));
         }
 
         $attribute = $this->getSmartApplicationListDropdownAttribute();

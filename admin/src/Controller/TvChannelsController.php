@@ -193,7 +193,7 @@ class TvChannelsController extends \Controller\BaseStalkerController {
 
         $this->app['editChannelName'] = $this->oneChannel['name'];
 
-        return $this->app['twig']->render('TvChannels_add_channel.twig');
+        return $this->app['twig']->render($this->getTemplateName('TvChannels::add_channel'));
     }
 
     public function epg() {

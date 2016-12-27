@@ -413,7 +413,7 @@ class UsersController extends \Controller\BaseStalkerController {
         $this->app['userName'] = $this->user['mac'];
         $this->app['breadcrumbs']->addItem($this->setLocalization('Users list'), $this->app['controller_alias'] . '/users-list');
         $this->app['breadcrumbs']->addItem($this->setLocalization('Edit user'));
-        return $this->app['twig']->render("Users_add_users.twig");
+        return $this->app['twig']->render($this->getTemplateName("Users::add_users"));
     }
 
     public function users_groups_consoles_list() {

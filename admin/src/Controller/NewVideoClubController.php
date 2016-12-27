@@ -184,7 +184,7 @@ class NewVideoClubController extends \Controller\BaseStalkerController {
         $this->app['breadcrumbs']->addItem($this->setLocalization('Movie list'), $this->app['controller_alias'] . '/video-list');
         $this->app['breadcrumbs']->addItem($this->setLocalization('Edit movie'));
 
-        return $this->app['twig']->render('NewVideoClub_add_video.twig');
+        return $this->app['twig']->render($this->getTemplateName('NewVideoClub::add_video'));
     }
     
     public function video_schedule() {
@@ -267,7 +267,7 @@ class NewVideoClubController extends \Controller\BaseStalkerController {
         $this->app['adsTitle'] = $this->ad['title'];
         $this->app['breadcrumbs']->addItem($this->setLocalization('Advertising'), $this->app['controller_alias'] . '/video-advertise');
         $this->app['breadcrumbs']->addItem($this->setLocalization('Edit commercial'));
-        return $this->app['twig']->render('NewVideoClub_add_video_ads.twig');
+        return $this->app['twig']->render($this->getTemplateName('NewVideoClub::add_video_ads'));
     }
     
     public function video_moderators_addresses() {
@@ -326,7 +326,7 @@ class NewVideoClubController extends \Controller\BaseStalkerController {
         $this->app['modName'] = $this->mod['name'];
         $this->app['breadcrumbs']->addItem($this->setLocalization('Moderators'), $this->app['controller_alias'] . '/video-moderators-addresses');
         $this->app['breadcrumbs']->addItem($this->setLocalization('Edit moderator'));
-        return $this->app['twig']->render('NewVideoClub_add_video_moderators.twig');
+        return $this->app['twig']->render($this->getTemplateName('NewVideoClub::add_video_moderators'));
     }
 
     public function video_logs() {
