@@ -2,6 +2,7 @@ html {
   position: relative;
   min-height: 100%;
 }
+
 body {
   color: #525252;
   background: #FFF /*url(../img/devoops_pattern_b10.png)*/ 0 0 repeat;

@@ -10,3 +10,5 @@
 /admin/logs
 /admin/resources/cache
 /wsserver/vendor
+/server/adm/css/dev
+/server/adm/js/dev

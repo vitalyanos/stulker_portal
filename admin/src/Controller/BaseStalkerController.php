@@ -46,8 +46,6 @@ class BaseStalkerController {
 
     public function __construct(Application $app, $modelName = '') {
         $this->app = $app;
-        getenv('STALKER_ENV');
-
         $this->request = $app['request'];
 
         if (session_id()) {
@@ -118,8 +116,12 @@ class BaseStalkerController {
             $this->app['request']->getSession()->set('cached_lang', $this->app['language']);
             if ($this->admin->getTheme()) {
                 $twig_theme = $this->admin->getTheme();
+            } elseif(!empty($this->app["themes"])){
+                $themes = $this->app["themes"];
+                reset($themes);
+                $twig_theme = key($themes);
             } else {
-                $twig_theme = 'theme1';
+                $twig_theme = 'default';
             }
             $this->app['twig_theme'] = $twig_theme;
         }
@@ -140,6 +142,9 @@ class BaseStalkerController {
         $tmp = explode('/', trim($this->request->getPathInfo(), '/'));
         $this->app['controller_alias'] = $tmp[0];
         $this->app['action_alias'] = (count($tmp) == 2) ? $tmp[1] : '';
+        $this->app['ext_script_path'] = '/' . (!empty($tmp[0]) ? ucfirst($tmp[0]): 'Index') . '/' . (!empty($tmp[1]) ? $tmp[1]: 'index');
+        $getenv = getenv('STALKER_ENV');
+        $this->app['stalker_env'] = ($getenv && $getenv == 'develop') ? 'dev': 'min';
         $this->baseHost = $this->request->getSchemeAndHttpHost();
         $this->workHost = $this->baseHost . Config::getSafe('portal_url', '/stalker_portal/');
         $this->app['relativePath'] = $this->relativePath = Config::getSafe('portal_url', '/stalker_portal/');

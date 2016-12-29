@@ -130,4 +130,13 @@ $app['twig'] = $app->share( $app->extend( 'twig', function ($twig, $app) {
     })
 );
 
+/*$app->register(new Silex\Provider\AssetServiceProvider(), array(
+    'filters' => array(
+        'uglifyjs2' => array(
+            // the path to the uglifyjs executable
+            'bin' => '/usr/local/bin/uglifyjs',
+        ),
+    ),
+));*/
+
 return require_once 'controllers.php';
