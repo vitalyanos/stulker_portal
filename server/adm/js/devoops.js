@@ -52,12 +52,15 @@ $("#ui-datepicker-div").css("z-index:5050;");
 $('#attribute_set').removeClass('dropup');
 $('#status').removeClass('dropup');
 $('.filter').removeClass('dropup'); 
+
 for (var f = document.forms, i = f.length; i--;)f[i].setAttribute("novalidate", i)
+
 function LoadSelect2Script(callback) {
     if (callback && typeof (callback) === "function") {
         callback();
     }
 }
+
 //
 //  Dynamically load DataTables plugin
 //  homepage: http://datatables.net v1.9.4 license - GPL or BSD
@@ -72,34 +75,43 @@ function LoadDataTablesScripts(callback) {
     };
 
     $.fn.dataTableExt.aoFeatures.push( {
+
+        // dataTable add update button
         "fnInit": function( oDTSettings ) {
-            var filterContainer = $(oDTSettings.nTableWrapper).find("#" + oDTSettings.sTableId + '_filter');
-            if (filterContainer.length && filterContainer.next("button.dataTables_ajax_update_button").length == 0) {
-                var newTableId = "dataTables_ajax_update_button_" + $.random(1000000);
-                filterContainer.after('<button id="'+newTableId+'" class="btn dataTables_ajax_update_button" type="button"><i class="fa fa-refresh"></i></button>');
-                $(document).on("click", "#" + newTableId, function(){
-                    if (oDTSettings.aoServerParams.length) {
-                        $("#" + oDTSettings.sTableId).DataTable().ajax.reload();
-                    } else if (typeof (updateTableData) == 'function') {
-                        updateTableData({tableId: oDTSettings.sTableId});
+                    
+                    var filterContainer = $(oDTSettings.nTableWrapper).find("#" + oDTSettings.sTableId + '_filter');
+                    
+                    if (filterContainer.length && filterContainer.next("button.dataTables_ajax_update_button").length == 0) {
+                        
+                        var newTableId = "dataTables_ajax_update_button_" + $.random(1000000);
+                        filterContainer.after('<button id="'+newTableId+'" class="btn dataTables_ajax_update_button" type="button"><i class="fa fa-refresh"></i></button>');
+                    
+                        $(document).on("click", "#" + newTableId, function(){
+                            if (oDTSettings.aoServerParams.length) {
+                                $("#" + oDTSettings.sTableId).DataTable().ajax.reload();
+                            } else if (typeof (updateTableData) == 'function') {
+                                updateTableData({tableId: oDTSettings.sTableId});
+                            }
+                        });
                     }
-                });
-            }
-        },
+                },
         "cFeature": "A"
     } );
+
     $.fn.dataTable.defaults.sDom += "A";
 
     if (typeof (window.stateSaveReject) == 'undefined' || !window.stateSaveReject) {
         $.fn.dataTable.defaults.stateSave = true;
         $.fn.dataTable.defaults.stateDuration = 0;
         $.fn.dataTable.defaults.stateSaveCallback = function(settings,data) {
+            
             var page = window.location.href.split("/");
             page = (page[page.length - 1] ? page[page.length - 1] : page[page.length - 2]).replace(/[^\w]/ig, '');
             /*console.log(page + " dataTable save settings");*/
             localStorage.setItem( page + 'DataTables_' + settings.sInstance, JSON.stringify(data) )
         };
         $.fn.dataTable.defaults.stateLoadCallback = function(settings) {
+            
             var page = window.location.href.split("/");
             page = (page[page.length - 1] ? page[page.length - 1] : page[page.length - 2]).replace(/[^\w]/ig, '');
             /*console.log(page + " dataTable load settings");*/
@@ -126,6 +138,7 @@ function LoadFancyboxScript(callback) {
         }
     }
 }
+
 /*-------------------------------------------
  Main scripts used by theme
  ---------------------------------------------*/
@@ -267,12 +280,14 @@ function MessagesMenuWidth(){
 //////////////////////////////////////////////////////
 //////////////////////////////////////////////////////
 $(document).ready(function () {
+    
     $( document ).ajaxComplete(function( event,request, settings ) {
         if (typeof(request.responseJSON) !== 'undefined' && typeof(request.responseJSON.error) !== 'undefined' && request.responseJSON.error == 'Need authorization') {
             window.location.reload(true);
             console.log(request.responseJSON.error);
         }
     });
+
     $( document ).ajaxError(function( event,request, settings ) {
         if (typeof(request.responseJSON) !== 'undefined' && typeof(request.responseJSON.error) !== 'undefined' && request.responseJSON.error == 'Need authorization') {
             window.location.reload(true);
@@ -308,9 +323,11 @@ $(document).ready(function () {
         
         var parents = $(this).parents('li');
         var li = $(this).closest('li.dropdown');
+        
         var another_items = $('.main-menu li').not(parents);
         another_items.find('a').removeClass('active');
         another_items.find('a').removeClass('active-parent');
+        
         if ($(this).hasClass('dropdown-toggle') || $(this).closest('li').find('ul').length == 0) {
             $(this).addClass('active-parent');
             var current = $(this).next();
@@ -384,9 +401,14 @@ $(document).ready(function () {
         e.stopPropagation();
     });
 
+    // click on column filter All
+
     $(document).on('click', "#attribute_set li:first-of-type label", function (e) {
+        
         var is_checked = !$(this).find("input[type='checkbox']").is(":checked");
+        
         $(this).find("input[type='checkbox']").prop('checked', is_checked);
+        
         var sendData = {};
         sendData[$(this).find("input[type='checkbox']").val()] = is_checked;
         $("#attribute_set input[type='checkbox']:not(:first):not(:last)").each(function(index){
@@ -400,17 +422,26 @@ $(document).ready(function () {
         return false;
     });
 
+    
+    // click on column filter other checkboxes
+    
     $(document).on('change', "#attribute_set li:not(:first-child) input[type='checkbox']", function (e) {
+        
         $("#attribute_set input[type='checkbox']").each(function(index){
             $("table[id^='datatable']").dataTable().fnSetColumnVis( index - 1, $(this).prop('checked'), false );
         });
+        
+        // toggle checkbox All if necessary\
+
         var allChbLen = $("#attribute_set li:not(:first-child) input[type='checkbox']").length;
         var chkChbLen = $("#attribute_set li:not(:first-child) input[type='checkbox']:checked").length;
         $("#attribute_set li:first-child input[type='checkbox']").prop('checked', allChbLen == chkChbLen);
+        
         var sendData = {};
         $("#attribute_set input[type='checkbox']").each(function(){
             sendData[$(this).val()] = $(this).prop('checked');
         });
+        
         $("table[id^='datatable']").DataTable().draw();
         setDropdownAttribute(sendData);
     });
@@ -671,13 +702,19 @@ function ajaxError(data, alertMsg, consoleMsg){
 }
 
 function ajaxPostSend(url, sendData, alertMsg, consoleMsg, async, adOptions){
-    var alertMsg = typeof(alertMsg) != 'undefined'? alertMsg: false;
-    var consoleMsg = typeof(consoleMsg) != 'undefined'? consoleMsg: false;
-    var async = typeof(async) != 'undefined' ? async: false;
+    
+    var alertMsg = typeof(alertMsg) != 'undefined'? alertMsg : false;
+    var consoleMsg = typeof(consoleMsg) != 'undefined'? consoleMsg : false;
+    var async = typeof(async) != 'undefined' ? async : false;
+    
     var ajaxOptions ={
         url: url,
         type: 'POST',
+        async: async,
+        timeout: 0,
+        dataType: "json",
         data: sendData,
+        
         success: function (data) {
             ajaxSuccess(data, alertMsg, consoleMsg);
         },
@@ -689,10 +726,7 @@ function ajaxPostSend(url, sendData, alertMsg, consoleMsg, async, adOptions){
                     ajaxError(data, alertMsg, consoleMsg);
                 }
             }
-        },
-        timeout: 0,
-        dataType: "json",
-        async: async
+        }
     };
 
     if (typeof (adOptions) == 'object') {
@@ -734,13 +768,16 @@ function ajaxPostSend(url, sendData, alertMsg, consoleMsg, async, adOptions){
     };
 })(jQuery);
 
-function setDropdownAttribute(sendData){
+function setDropdownAttribute( sendData ){
+    
     var param = '';
     var filterLink = $("a.btn-success.active[href*='filters']");
+    
     if (filterLink.length > 0) {
         param = 'with-button-filters';
     }
-    ajaxPostSend('./?set-dropdown-attribute' + (param != '' ? "=" + param : ''), sendData);
+
+    ajaxPostSend('./?set-dropdown-attribute' + (param != '' ? "=" + param : ''), sendData );
 }
 
 jQuery.extend({

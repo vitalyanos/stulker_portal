@@ -248,7 +248,9 @@
         {% autoescape false %}
             {% for key, item in dropdownAttribute %}
                 {% if 'all' != item.name %}
-                <th data-filter="{{ item.name }}">{% if not(item.name == 'operations') %}{{ item.title }}{% endif %}</th>
+                <th 
+                    {% if item.name == 'enable_tv_archive' %}class="archive"{% endif %}
+                    data-filter="{{ item.name }}">{% if not(item.name == 'operations') %}{{ item.title }}{% endif %}</th>
                 {% endif %}
             {% endfor %}
         {% endautoescape %}
@@ -260,7 +262,10 @@
         "columns": [
         {% for key, item in app.dropdownAttribute %}
             {% if 'all' != item.name %}
-            {"data": "{{ item.name }}" {% if not(item.checked) %}, visible: false, className: 'none'{% endif %}}{% if not loop.last %},{% endif %}
+            {"data": "{{ item.name }}",
+                {% if not(item.checked) %}bVisible: false,{% endif %}
+                {#  {% if item.name == 'enable_tv_archive' %}className: 'archive'{% endif %} #}
+            }{% if not loop.last %},{% endif %}
             {% endif %}
         {% endfor %}
         ],

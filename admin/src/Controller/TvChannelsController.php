@@ -85,6 +85,7 @@ class TvChannelsController extends \Controller\BaseStalkerController {
 
         $this->getIPTVfilters();
 
+        // Compare DB stored values and default set
         $attribute = $this->getIptvListDropdownAttribute();
         $this->checkDropdownAttribute($attribute);
         $this->app['dropdownAttribute'] = $attribute;
@@ -1790,12 +1791,13 @@ class TvChannelsController extends \Controller\BaseStalkerController {
     private function getIptvListDropdownAttribute(){
         return array(
 			array('name' => 'id',               'title' => $this->setLocalization('ID'),                                'checked' => FALSE),
-			array('name' => 'number',           'title' => $this->setLocalization('Number'),                            'checked' => TRUE),
+            //array('name' => 'number',           'title' => $this->setLocalization('Number'),                            'checked' => TRUE),
+			array('name' => 'number',           'title' => $this->setLocalization('№'),                                 'checked' => TRUE),
 			array('name' => 'logo',             'title' => $this->setLocalization('Logo'),                              'checked' => TRUE),
             array('name' => 'name',             'title' => $this->setLocalization('Title'),                             'checked' => TRUE),
             array('name' => 'genres_name',      'title' => $this->setLocalization('Genre'),                             'checked' => TRUE),
-            array('name' => 'enable_tv_archive','title' => $this->setLocalization('Archive'),                           'checked' => TRUE),
             array('name' => 'cmd',              'title' => $this->setLocalization('URL'),                               'checked' => TRUE),
+            array('name' => 'enable_tv_archive','title' => $this->setLocalization('Archive'),                           'checked' => TRUE),
             array('name' => 'xmltv_id',         'title' => $this->setLocalization('XMLTV ID'),                          'checked' => FALSE),
             array('name' => 'claims',           'title' => $this->setLocalization('Claims about audio/video/epg'),      'checked' => FALSE),
             array('name' => 'monitoring_status','title' => $this->setLocalization('Monitoring status'),                 'checked' => TRUE),
@@ -1897,7 +1899,10 @@ class TvChannelsController extends \Controller\BaseStalkerController {
         if (!((int)$row['enable_monitoring'])) {
             $return .= $this->setLocalization('monitoring off');
         } else {
+            
             $diff = time() - strtotime($row['monitoring_status_updated']);
+            $return .= '<span class="no-wrap">';
+
             if ($diff > 3600) {
                 $return .= $this->setLocalization('more than an hour ago');
             } else if ($diff < 60) {
@@ -1905,7 +1910,8 @@ class TvChannelsController extends \Controller\BaseStalkerController {
             } else {
                 $return .= $this->setLocalization('{{minute}} minutes ago', '', 0, array('{{minute}}' => round($diff / 60)));
             }
-            $return .= '<br><span style="color: ';
+            $return .= '</span>';
+            $return .= '<br><span class="no-wrap ';
 
             $disabled_link = $this->db->getChanelDisabledLink($row['id']);
             $status = $this->getFieldFromArray($disabled_link, 'status');
@@ -1916,18 +1922,18 @@ class TvChannelsController extends \Controller\BaseStalkerController {
                     if (!empty($this->data['filters']) && array_key_exists('monitoring_status', $this->data['filters']) && ((int) $this->data['filters']['monitoring_status']) != 0 && ((int) $this->data['filters']['monitoring_status']) != 4) {
                         return FALSE;
                     }
-                    $return .= '#f4c430;">' . $this->setLocalization('there are some problems');
+                    $return .= 'gold">' . $this->setLocalization('there are some problems');
                 } else {
                     if (!empty($this->data['filters']) && array_key_exists('monitoring_status', $this->data['filters']) && ((int) $this->data['filters']['monitoring_status']) != 0 && ((int) $this->data['filters']['monitoring_status']) != 3) {
                         return FALSE;
                     }
-                    $return .= 'green;">' . $this->setLocalization('no errors');
+                    $return .= 'green">' . $this->setLocalization('no errors');
                 }
             } else {
                 if (!empty($this->data['filters']) && array_key_exists('monitoring_status', $this->data['filters']) && ((int) $this->data['filters']['monitoring_status']) != 0 && ((int) $this->data['filters']['monitoring_status']) != 2) {
                     return FALSE;
                 }
-                $return .= 'red;">' . $this->setLocalization('errors occurred');
+                $return .= 'red">' . $this->setLocalization('errors occurred');
             }
             $return .= '</span>';
         }

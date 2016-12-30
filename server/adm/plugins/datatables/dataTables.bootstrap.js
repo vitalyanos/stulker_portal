@@ -1,7 +1,9 @@
 /* Set the defaults for DataTables initialisation */
 $.extend(true, $.fn.dataTable.defaults, {
 	"searchHighlight": true,
-    "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+//    "sDom": "<'row-fluid'<'span6'l><'span6'f>>rt<'row-fluid'<'span6'i><'span6'p>>",
+    "sDom": "<'row-fluid'<'col-sm-6'li><'col-sm-6'f>>rt<'row-fluid'<'span6'i><'span6'p>>",
+//    "sDom": "<'row-fluid'<'span6'i><'span6'f>>rt<'row-fluid'<'span6'l><'span6'p>>",
     "sPaginationType": "bootstrap",
     "iDisplayLength": 50,
 	"fnInitComplete": function (oSettings) {
@@ -27,6 +29,7 @@ $.extend(true, $.fn.dataTable.defaults, {
             });
         }
 	},
+
     "fnDrawCallback": function (oSettings) {
         var paginateRow = $(oSettings.nTableWrapper).find('div.dataTables_paginate');
         var pageCount = Math.ceil((this.fnSettings().fnRecordsDisplay()) / this.fnSettings()._iDisplayLength);
@@ -81,11 +84,13 @@ $.extend(true, $.fn.dataTable.defaults, {
             }
         });
     },
+
     "fnRowCallback": function (nRow, aData, iDisplayIndex) {
         if (aData && aData.RowOrder) {
             nRow.setAttribute('id', aData.RowOrder);  //Initialize row id for every row
         }
     },
+
     "ajax" : {
         data: function(data) {
             data = dataTableDataPrepare(data);
@@ -111,9 +116,11 @@ $.extend(true, $.fn.dataTable.defaults, {
 
         }
     },
+
     "oLanguage": {
         "sLengthMenu": "_MENU_ records per page"
     },
+
     "aoColumnDefs": [
         {"width": "16px", "targets": [-1]}
     ]
@@ -122,8 +129,9 @@ $.extend(true, $.fn.dataTable.defaults, {
 $.extend(true, $.fn.dataTable.defaults.column, {
     "createdCell" : function (td, cellData, rowData, row, col) {
         var oSettings = this.fnSettings();
-        var oSearch = this.fnSettings().oSearch? this.fnSettings().oSearch: this.fnSettings().oPreviousSearch;
+        var oSearch = this.fnSettings().oSearch ? this.fnSettings().oSearch : this.fnSettings().oPreviousSearch;
         var colSettings = oSettings.aoColumns[col];
+        
         if (oSearch.sSearch) {
             if (colSettings.bSearchable) {
                 $(td).addClass('DThighlight');
@@ -234,6 +242,7 @@ $.extend( $.fn.dataTableExt.oPagination, {
 		}
 	}
 } );
+
 
 $.fn.dataTableExt.oApi.fnUpdateCurrentRow = function ( oSettings, row, data ){
 
@@ -355,6 +364,49 @@ $.fn.dataTableExt.oApi.fnCheckJSON = function ( oSettings ){
     }
 };
 
+
+function dataTableDataPrepare(data) {
+    if (!data || !data.columns) {
+        return data;
+    }
+    
+    var visibleFields = {};
+    var dataFields = data.columns.map(function(el){ return el.data;});
+    
+    $("table.dataTable").each( function(){
+        
+        var tmpF = {length: 0};
+        var aoColumns = $(this).dataTable().fnSettings().aoColumns;
+        
+        $.each(aoColumns, function(){
+            if (dataFields.indexOf(this.data) === -1) {
+                tmpF.length = 0;
+                return true;
+            }
+            tmpF[this.data] = this.bVisible;
+            tmpF.length++;
+        });
+        
+        if (tmpF.length != 0) {
+            delete tmpF.length;
+            visibleFields = tmpF;
+            return false;
+        }
+    });
+
+    $.each(data.columns, function(){
+        if (visibleFields.hasOwnProperty(this.data)) {
+            this.visible = visibleFields[this.data];
+        }
+    });
+
+    var params = $.parseParams(window.location.href.split('?')[1] || ''); //window.location.href.split('?')[1] || ''
+    for (var i in params) {
+        data[i] = params[i];
+    }
+    return data;
+}
+
 /*
  * TableTools Bootstrap compatibility
  * Required TableTools 2.1+
@@ -392,37 +444,3 @@ if ( $.fn.DataTable.TableTools ) {
 	} );
 }
 
-function dataTableDataPrepare(data) {
-    if (!data || !data.columns) {
-        return data;
-    }
-    var visibleFields = {};
-    var dataFields = data.columns.map(function(el){ return el.data;});
-    $("table.dataTable").each(function(){
-        var tmpF = {length: 0};
-        var aoColumns = $(this).dataTable().fnSettings().aoColumns;
-        $.each(aoColumns, function(){
-            if (dataFields.indexOf(this.data) === -1) {
-                tmpF.length = 0;
-                return true;
-            }
-            tmpF[this.data] = this.bVisible;
-            tmpF.length++;
-        });
-        if (tmpF.length != 0) {
-            delete tmpF.length;
-            visibleFields = tmpF;
-            return false;
-        }
-    });
-    $.each(data.columns, function(){
-        if (visibleFields.hasOwnProperty(this.data)) {
-            this.visible = visibleFields[this.data];
-        }
-    });
-    var params = $.parseParams(window.location.href.split('?')[1] || ''); //window.location.href.split('?')[1] || ''
-    for (var i in params) {
-        data[i] = params[i];
-    }
-    return data;
-}

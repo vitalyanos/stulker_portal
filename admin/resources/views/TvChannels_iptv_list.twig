@@ -4,7 +4,15 @@
 {% set active = 'tv-channels' %}
 {% set title = ('IPTV channels'|trans ~ ': ' ~ 'channels list'|trans) | trans %}
 
+{% if colStyles is not defined %}
+    {% set colStyles = [] %}
+{% endif %}
+
+
+{% set  colStyles = colStyles|merge(['thisComponent.css']) %}
+
 {% block content %}
+{{colStyles}}
     <div id="iptv_list">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -122,15 +130,28 @@
                     for (var i in json.data) {
                         var status = json.data[i].status;
                         var claimsCount = json.data[i].sound_counter + json.data[i].video_counter + json.data[i].no_epg + json.data[i].wrong_epg;
-                        json.data[i].logo = '<img class="img-rounded channel-logo" src="' + ( json.data[i].logo ? json.data[i].logo + "?" + $.random(100000) : '') + '" alt="">';
+                        
+                        /*
+                        if( json.data[i].logo )
+                        {
+                            json.data[i].logo = '<img class="img-rounded channel-logo" src="' + json.data[i].logo + "?" + $.random(100000) + '" alt="" />';
+                        }
+                        */
+                        //dummy.png
+                        //json.data[i].logo = '<img class="img-rounded channel-logo" src="' + ( json.data[i].logo ? json.data[i].logo + "?" + $.random(100000) : '{{ app.request.baseUrl }}/../../misc/logos/dummy.png') + '" alt="">';
+                        //no_image.png =)
+
+                        json.data[i].logo = '<img class="img-rounded channel-logo" src="' + ( json.data[i].logo ? json.data[i].logo + "?" + $.random(100000) : '{{ app.request.baseUrl }}/img/no_image.png') + '" alt="">';
+                        
                         json.data[i].name = '<a href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/edit-channel?id=' + json.data[i].id + '">' + json.data[i].name + '</a>';
+                        json.data[i].cmd = '<div class="text-ellipsis">' + json.data[i].cmd + '</div>';
                         json.data[i].enable_tv_archive = ( json.data[i].enable_tv_archive ? "{{ 'Yes'|trans }}" : "{{ 'No'|trans }}");
                         json.data[i].status = ( json.data[i].status ? "{{ 'Published'|trans }}" : "{{ 'Unpublished'|trans }}");
 
                         if (claimsCount) {
                             json.data[i].claims = [json.data[i].video_counter, json.data[i].sound_counter, json.data[i].no_epg, json.data[i].wrong_epg].join('/');
                         } else {
-                            json.data[i].claims = "///";
+                            json.data[i].claims = "----";
                         }
                         json.data[i].operations = '<div class="col-xs-3 col-sm-8 ddd">\n\
                                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">\n\
@@ -185,12 +206,36 @@
                 "bPaginate": true,
                 "bInfo":     true,
                 {% if attribute(app, 'dropdownAttribute') is defined %}
-                {{ main_macro.get_datatable_column(app['dropdownAttribute']) }}
+                {{ main_macro.get_datatable_column( app['dropdownAttribute'] ) }}
                 {% endif %}
+
+
+                /*
+                "colReorder": true,
+                
+                "colReorder": {
+                    "order": [ 11 ,10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 ]
+                },
+                */
+                //"responsive": true,   // turn on the responcive design -l, -p orientation, etc.
+
+                "rowReorder": true,
+
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]], // for page length select
+
+                //"defaultContent": [],
+                //"deferLoading": 57,
+                //"iDeferLoading": [ 57, 100 ], //helps to config the table tools and save table целостность, when default data is set manualy.
+
                 "aoColumnDefs": [ 
-                    { "targets": [ -1 ], "sortable": false},
+                    { "targets": [ -1 ], "sortable": false },
                     { "searchable": false, "targets": [ 2, 4, 5, 8, 9, 10, 11] },
                     { "sortable": false, "targets": [8, 11] },
+                    { "className": "dt-center", "targets": [ 6 ] },
+                    { "className": "dt-right", "targets": [ 0, 1 ] },
+                    //{ "className": "dt-nowrap", "targets": [ 5 ] },
+                    //{ "sClass": "dt-iptv-list-url", "targets": [ 5 ] },
+                    //{ colReorder: { order: [ 5, 4, 3, 2, 1, 0 ] } },
                     { className: "action-menu", "targets": [ -1 ] }
                 ]
             }).prev('.dataTables_processing').hide('');

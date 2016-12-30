@@ -4,6 +4,9 @@
         {% block head %}
             <meta charset="utf-8">
             <title>{{title}}</title>
+            {% set colStyles = [] %}
+            {% concatJS(colStyles) | minimize %}
+            
             {% include "basic_templates/meta.twig" %}
             {% include "basic_templates/css.twig" %}
         {% endblock head %}
@@ -14,9 +17,10 @@
                 <!--Start Container-->
 				<div id="wrapper">
 				{% block header %}
-                {% include "basic_templates/header.twig" %}
+                    {% include "basic_templates/header.twig" %}
 				{% endblock header %}
-									{% block sidebar %}
+					
+                    {% block sidebar %}
                             {% include "basic_templates/sidebar.twig" %}
                     {% endblock sidebar %}
                     <div id="main" class="container-fluid">
@@ -37,8 +41,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        {% block content %}
-                                        {% endblock content %}
+                                        {% block content %}{% endblock %}
                                     </div>
                                 </div>
                             </div>
