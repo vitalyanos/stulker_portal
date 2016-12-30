@@ -18,11 +18,6 @@ class TvChannelsController extends \Controller\BaseStalkerController {
         'cmd' => array(''),
         'user_agent_filter' => array(''),
         'priority' => array(''),
-        'use_http_tmp_link' => array(FALSE),
-        'wowza_tmp_link' => array(''),
-        'nginx_secure_link' => array(''),
-        'flussonic_tmp_link' => array(''),
-        'xtream_codes_support' => array(''),
         'enable_monitoring' => array(FALSE),
         'monitoring_status' => array(FALSE),
         'enable_balancer_monitoring' => array(''),
@@ -42,6 +37,10 @@ class TvChannelsController extends \Controller\BaseStalkerController {
         parent::__construct($app, __CLASS__);
         $this->logoDir = str_replace('/admin', '', $this->baseDir) . "/misc/logos";
         $this->app['baseHost'] = $this->baseHost;
+
+        foreach($this->getHttpTmpLink() as $row){
+            $this->broadcasting_keys[$row['value']] = $row['value'] == 'use_http_tmp_link' ? array(FALSE): array('');
+        }
     }
 
     // ------------------- action method ---------------------------------------
@@ -173,6 +172,7 @@ class TvChannelsController extends \Controller\BaseStalkerController {
         settype($this->oneChannel['enable_tv_archive'], 'boolean');
         settype($this->oneChannel['wowza_dvr'], 'boolean');
         settype($this->oneChannel['flussonic_dvr'], 'boolean');
+        settype($this->oneChannel['nimble_dvr'], 'boolean');
         settype($this->oneChannel['allow_pvr'], 'boolean');
         settype($this->oneChannel['censored'], 'boolean');
         settype($this->oneChannel['allow_local_timeshift'], 'boolean');
@@ -194,7 +194,7 @@ class TvChannelsController extends \Controller\BaseStalkerController {
 
         $this->app['editChannelName'] = $this->oneChannel['name'];
 
-        return $this->app['twig']->render('TvChannels_add_channel.twig');
+        return $this->app['twig']->render($this->getTemplateName('TvChannels::add_channel'));
     }
 
     public function epg() {
@@ -609,8 +609,10 @@ class TvChannelsController extends \Controller\BaseStalkerController {
         $epg = (!empty($this->postData['epg_body'])? $this->postData['epg_body']: '');
         $epg = preg_split("/\n/", stripslashes(trim($epg)));
 
+        $date_o = \DateTime::createFromFormat('Y-m-d H:i:s', $date.' 00:00:00');
+
         for ($i=0; $i<count($epg); $i++){
-            $curr_row = $this->get_epg_row($date, $epg, $i);
+            $curr_row = $this->get_epg_row($date_o, $epg, $i);
             $curr_row['ch_id'] = $ch_id;
             $curr_row['real_id'] = $ch_id . '_' . strtotime($curr_row['time']);
             $senddata['inserted'] += $this->db->insertEPGForChannel($curr_row);
@@ -1430,6 +1432,12 @@ class TvChannelsController extends \Controller\BaseStalkerController {
                         'multiple' => TRUE,
                     )
                 )
+                ->add('nimble_dvr', 'checkbox', array('required' => false))
+                ->add('nimble_storage_names', 'choice', array(
+                        'choices' => (empty($storages['nimble_storage_names']) || !is_array($storages['nimble_storage_names']) ? array(): $storages['nimble_storage_names']),
+                        'multiple' => TRUE,
+                    )
+                )
                 ->add('volume_correction', 'choice', array(
                             'choices' => array_combine(range(-20, 20, 1), range(-100, 100, 5)),
                             'constraints' => array(
@@ -1442,37 +1450,36 @@ class TvChannelsController extends \Controller\BaseStalkerController {
                 ->add('logo', 'hidden')
                 ->add('cmd', 'collection', $this->getDefaultOptions())
                 ->add('user_agent_filter', 'collection', $this->getDefaultOptions())
-                ->add('priority', 'collection', $this->getDefaultOptions())
-                ->add('use_http_tmp_link', 'collection', $this->getDefaultOptions('checkbox'))
-                ->add('wowza_tmp_link', 'collection', $this->getDefaultOptions())
-                ->add('nginx_secure_link', 'collection', $this->getDefaultOptions())
-                ->add('flussonic_tmp_link', 'collection', $this->getDefaultOptions())
-                ->add('xtream_codes_support', 'collection', $this->getDefaultOptions())
-                ->add('enable_monitoring', 'collection', $this->getDefaultOptions('checkbox'))
-                ->add('monitoring_status', 'collection', $this->getDefaultOptions())
-                ->add('enable_balancer_monitoring', 'collection', $this->getDefaultOptions())
-                ->add('monitoring_url', 'collection', $this->getDefaultOptions())
-                ->add('use_load_balancing', 'collection', $this->getDefaultOptions('checkbox'))
-                ->add('stream_server', 'collection', $this->getDefaultOptions())
-                ->add('enable_tv_archive', 'checkbox', array('required' => false))
-                ->add('mc_cmd', 'text', array(
-                    'constraints' => array(new Assert\Regex(array(
-                        'pattern' => '/^(http|udp|rtp)\:\/\//',
-                    ))),
-                    'required' => false))
-                ->add('tv_archive_duration', 'text', array(
-                    'constraints' => new Assert\Range(array('min' => 0, 'max' => 999))
-                    ))
-                ->add('allow_pvr', 'checkbox', array('required' => false))
-                ->add('xmltv_id', 'text', array('required' => false))
-                ->add('correct_time', 'text', array(
-                    'constraints' => new Assert\Range(array('min' => -720, 'max' => 840))
-                    ))
-                ->add('censored', 'checkbox', array('required' => false))
-                ->add('base_ch', 'checkbox', array('required' => false))
-                ->add('allow_local_timeshift', 'checkbox', array('required' => false))
-                ->add('allow_local_pvr', 'checkbox', array('required' => false))
-                ->add('save', 'submit');
+                ->add('priority', 'collection', $this->getDefaultOptions());
+        foreach($this->getHttpTmpLink() as $row){
+            $form->add($row['value'], 'collection', $this->getDefaultOptions($row['value'] == 'use_http_tmp_link' ? 'checkbox': 'hidden'));
+        }
+
+        $form->add('enable_monitoring', 'collection', $this->getDefaultOptions('checkbox'))
+            ->add('monitoring_status', 'collection', $this->getDefaultOptions())
+            ->add('enable_balancer_monitoring', 'collection', $this->getDefaultOptions())
+            ->add('monitoring_url', 'collection', $this->getDefaultOptions())
+            ->add('use_load_balancing', 'collection', $this->getDefaultOptions('checkbox'))
+            ->add('stream_server', 'collection', $this->getDefaultOptions())
+            ->add('enable_tv_archive', 'checkbox', array('required' => false))
+            ->add('mc_cmd', 'text', array(
+                'constraints' => array(new Assert\Regex(array(
+                    'pattern' => '/^(http|udp|rtp)\:\/\//',
+                ))),
+                'required' => false))
+            ->add('tv_archive_duration', 'text', array(
+                'constraints' => new Assert\Range(array('min' => 0, 'max' => 999))
+            ))
+            ->add('allow_pvr', 'checkbox', array('required' => false))
+            ->add('xmltv_id', 'text', array('required' => false))
+            ->add('correct_time', 'text', array(
+                'constraints' => new Assert\Range(array('min' => -720, 'max' => 840))
+            ))
+            ->add('censored', 'checkbox', array('required' => false))
+            ->add('base_ch', 'checkbox', array('required' => false))
+            ->add('allow_local_timeshift', 'checkbox', array('required' => false))
+            ->add('allow_local_pvr', 'checkbox', array('required' => false))
+            ->add('save', 'submit');
 //                ->add('reset', 'reset');
 
         return $form->getForm();
@@ -1525,14 +1532,9 @@ class TvChannelsController extends \Controller\BaseStalkerController {
                 continue;
             }
 
-            $links[] = array(
+            $link = array(
                 'url' => $value,
                 'priority' => array_key_exists($key, $data['priority']) ? (int) $data['priority'][$key] : 0,
-                'use_http_tmp_link' => !empty($data['use_http_tmp_link']) && array_key_exists($key, $data['use_http_tmp_link']) ? (int) $data['use_http_tmp_link'][$key] : 0,
-                'wowza_tmp_link' => !empty($data['wowza_tmp_link']) && array_key_exists($key, $data['wowza_tmp_link']) ? (int) $data['wowza_tmp_link'][$key] : 0,
-                'flussonic_tmp_link' => !empty($data['flussonic_tmp_link']) && array_key_exists($key, $data['flussonic_tmp_link']) ? (int) $data['flussonic_tmp_link'][$key] : 0,
-                'xtream_codes_support' => !empty($data['xtream_codes_support']) && array_key_exists($key, $data['xtream_codes_support']) ? (int) $data['xtream_codes_support'][$key] : 0,
-                'nginx_secure_link' => !empty($data['nginx_secure_link']) && array_key_exists($key, $data['nginx_secure_link']) ? (int) $data['nginx_secure_link'][$key] : 0,
                 'user_agent_filter' => array_key_exists($key, $data['user_agent_filter']) ? $data['user_agent_filter'][$key] : '',
                 'monitoring_url' => array_key_exists($key, $data['monitoring_url']) ? $data['monitoring_url'][$key] : '',
                 'use_load_balancing' => !empty($data['stream_server']) && array_key_exists($key, $data['stream_server']) && !empty($data['use_load_balancing']) && array_key_exists($key, $data['use_load_balancing']) ? (int) $data['use_load_balancing'][$key] : 0,
@@ -1540,6 +1542,12 @@ class TvChannelsController extends \Controller\BaseStalkerController {
                 'enable_balancer_monitoring' => !empty($data['enable_balancer_monitoring']) && array_key_exists($key, $data['enable_balancer_monitoring']) ? (int) $data['enable_balancer_monitoring'][$key] : 0,
                 'stream_servers' => !empty($data['stream_server']) && array_key_exists($key, $data['stream_server']) ? explode(';', $data['stream_server'][$key]) : array(),
             );
+
+            foreach($this->getHttpTmpLink() as $row){
+                $link[$row['value']] = !empty($data[$row['value']]) && array_key_exists($key, $data[$row['value']]) ? (int) $data[$row['value']][$key] : 0;
+            }
+
+            $links[] = $link;
         }
         return $links;
     }
@@ -1611,7 +1619,7 @@ class TvChannelsController extends \Controller\BaseStalkerController {
     }
 
     private function deleteChannelTasks($new_data, $old_data) {
-        if ($old_data['enable_tv_archive'] != $new_data['enable_tv_archive'] || $old_data['wowza_dvr'] != $new_data['wowza_dvr'] || $old_data['flussonic_dvr'] != $new_data['flussonic_dvr']) {
+        if ($old_data['enable_tv_archive'] != $new_data['enable_tv_archive'] || $old_data['wowza_dvr'] != $new_data['wowza_dvr'] || $old_data['flussonic_dvr'] != $new_data['flussonic_dvr'] || $old_data['nimble_dvr'] != $new_data['nimble_dvr']) {
 
             if ($old_data['enable_tv_archive']) {
 
@@ -1619,7 +1627,9 @@ class TvChannelsController extends \Controller\BaseStalkerController {
                     $archive = new \FlussonicTvArchive();
                 } elseif ($old_data['wowza_dvr']){
                     $archive = new \WowzaTvArchive();
-                }else{
+                } elseif ($old_data['nimble_dvr']){
+                    $archive = new \NimbleTvArchive();
+                } else {
                     $archive = new \TvArchive();
                 }
 
@@ -1643,7 +1653,12 @@ class TvChannelsController extends \Controller\BaseStalkerController {
                 if (!empty($data['wowza_storage_names'])) {
                     $storage_names = $data['wowza_storage_names'];
                 }
-            }else{
+            } elseif (!empty($data['nimble_dvr']) && $data['nimble_dvr'] !== 'off'){
+                $archive = new \NimbleTvArchive();
+                if (!empty($data['nimble_storage_names'])) {
+                    $storage_names = $data['nimble_storage_names'];
+                }
+            } else {
                 $archive = new \TvArchive();
                 if (!empty($data['storage_names'])) {
                     $storage_names = $data['storage_names'];
@@ -1807,7 +1822,7 @@ class TvChannelsController extends \Controller\BaseStalkerController {
 
     }
 
-    private function get_epg_row($date, $epg_lines, $line_num = 0){
+    private function get_epg_row(&$date, $epg_lines, $line_num = 0){
 
         $epg_line = @trim($epg_lines[$line_num]);
 
@@ -1817,7 +1832,9 @@ class TvChannelsController extends \Controller\BaseStalkerController {
 
             $result = array();
 
-            $time = $date.' '.$tmp_line[1].':'.$tmp_line[2].':00';
+            $date->setTime((int)$tmp_line[1], (int) $tmp_line[2], 0);
+
+            $time = $date->format('Y-m-d H:i:s');
 
             $result['time'] = $time;
 
@@ -1833,8 +1850,11 @@ class TvChannelsController extends \Controller\BaseStalkerController {
 
                 $result['duration'] = strtotime($time_to) - strtotime($time);
             }else{
-                $result['time_to'] = 0;
-                $result['duration'] = 0;
+                $next_day = \DateTime::createFromFormat('Y-m-d H:i:s', $date->format('Y-m-d H:i:s'));
+                $next_day->setTime(0, 0, 0);
+                $next_day->modify('+1 day');
+                $result['time_to'] = $next_day->format('Y-m-d H:i:s');
+                $result['duration'] = $next_day->getTimestamp() - $date->getTimestamp();
             }
 
             return $result;
@@ -1856,12 +1876,14 @@ class TvChannelsController extends \Controller\BaseStalkerController {
     }
 
     private function getStorages($id = FALSE){
-        $return = array('storage_names' => array(), 'wowza_storage_names' => array(), 'flussonic_storage_names' => array());
+        $return = array('storage_names' => array(), 'wowza_storage_names' => array(), 'flussonic_storage_names' => array(), 'nimble_storage_names' => array());
         foreach ($this->db->getStorages() as $key => $value) {
-            if (($value['flussonic_dvr'] && !$value['wowza_dvr']) ) {
+            if (($value['flussonic_dvr'] && !$value['wowza_dvr'] && !$value['nimble_dvr'])) {
                 $return['flussonic_storage_names'][$value['storage_name']] = $value['storage_name'];
-            } elseif (!$value['flussonic_dvr'] && $value['wowza_dvr']) {
+            } elseif (!$value['flussonic_dvr'] && $value['wowza_dvr']  && !$value['nimble_dvr']) {
                 $return['wowza_storage_names'][$value['storage_name']] = $value['storage_name'];
+            } elseif (!$value['flussonic_dvr'] && !$value['wowza_dvr']  && $value['nimble_dvr']) {
+                $return['nimble_storage_names'][$value['storage_name']] = $value['storage_name'];
             } else {
                 $return['storage_names'][$value['storage_name']] = $value['storage_name'];
             }
@@ -1878,7 +1900,7 @@ class TvChannelsController extends \Controller\BaseStalkerController {
                     return (is_array($names) && !empty($names) ? array_combine(array_values($names), $names): array());
                 }, $return );
             } else {
-                $return = array('storage_names' => array(), 'wowza_storage_names' => array(), 'flussonic_storage_names' => array());
+                $return = array('storage_names' => array(), 'wowza_storage_names' => array(), 'flussonic_storage_names' => array(), 'nimble_storage_names' => array());
             }
         }
         return $return;
@@ -2033,7 +2055,10 @@ class TvChannelsController extends \Controller\BaseStalkerController {
             array('value' => 'wowza_tmp_link', 'label' => $this->setLocalization('WOWZA'), 'check_module' => FALSE),
             array('value' => 'nginx_secure_link', 'label' => $this->setLocalization('NGINX'), 'check_module' => FALSE),
             array('value' => 'flussonic_tmp_link', 'label' => $this->setLocalization('Flussonic'), 'check_module' => FALSE),
-            array('value' => 'xtream_codes_support', 'label' => $this->setLocalization('Xtream-Codes'), 'check_module' => TRUE)
+            array('value' => 'xtream_codes_support', 'label' => $this->setLocalization('Xtream-Codes'), 'check_module' => TRUE),
+            array('value' => 'edgecast_auth_support', 'label' => $this->setLocalization('EdgeCast'), 'check_module' => TRUE),
+            array('value' => 'akamai_auth_support', 'label' => $this->setLocalization('Akamai'), 'check_module' => FALSE),
+            array('value' => 'nimble_auth_support', 'label' => $this->setLocalization('Nimble'), 'check_module' => FALSE)
         );
     }
 }

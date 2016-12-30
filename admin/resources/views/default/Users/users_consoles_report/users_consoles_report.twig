@@ -1,0 +1,110 @@
+{% extends (app['twig_theme'] ~ '/' ~ 'layout.twig') | trans %}
+{% import (app['twig_theme'] ~ '/macro/iptw_macro.twig') | trans  as main_macro %}
+{% set title = ('Users'|trans ~ ': ' ~ 'STB statuses report '|trans ~ app.now_time) | trans %}
+
+{% block content %}
+    <style type="text/css">
+        @media print{
+            #datatable-1{
+                max-width: 180mm;
+            }
+            #datatable-1 th, #datatable-1 td{
+                max-width: 60mm;
+            }
+        }
+    </style>
+    <div id="iptv_list">
+        <div class="row row_no_padding">
+            <div class="box">
+					{% if attribute(app, 'dropdownAttribute') is defined %}
+                    {{ main_macro.get_dropdown_attribute(app['dropdownAttribute']) }}
+                    {% endif %}	
+                <div class="box-content">
+                    <div class="box-content no-padding">
+                        <div class="" id="table_container">
+                            <div class="dataTables_processing"></div>
+                            <table class="table dataTable table-hover table-datatable" id="datatable-1">
+                                {% if attribute(app, 'dropdownAttribute') is defined %}
+                                    {{ main_macro.get_datatable_head(app['dropdownAttribute']) }}
+                                {% endif %}
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" defer>
+
+        function TestTable1() {
+            $('#datatable-1').on('xhr.dt', function (e, settings, json) {
+                if (typeof (json.data) == 'object' && json.data.length >0) {
+                    var date;
+                    for (var i in json.data) {
+                        var status = json.data[i].status;
+                        var mac = json.data[i].mac;
+                        var id = json.data[i].id;
+                        json.data[i].mac = '<a href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/edit-users?id='+ id +'" >'+ mac +'</a>';
+                        json.data[i].status = (status != 0 ? "<span class=''>{{ 'off'|trans }}</span>" : "<span class=''>{{ 'on'|trans }}</span>");
+                        date = json.data[i]['last_change_status'];
+                        if (date > 0) {
+                            date = new Date(date * 1000);
+                            json.data[i]['last_change_status'] = date.toLocaleFormat("%b %d, %Y %H:%M");
+                        }
+                    }
+                }
+            }).dataTable({
+                "processing": true,
+                "serverSide": true,
+                "dom": 'T<"clear">lfrtip',
+                "oTableTools": {
+                    "sSwfPath":        "plugins/datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
+                    "aButtons": [
+                        {
+                        "sExtends": "print",
+                        "bShowAll": true,
+                        "sMessage": "<h3>{{ 'STB statuses report'|trans }} ({{ "now"|date("d.m.Y") }} {{ "now"|date("H:i:s") }})</h3>",
+                        "sButtonText": "{{ 'Print'|trans }}"
+                        }]
+                },
+                "ajax": {
+                    "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/users-consoles-report-json",
+                    "data": function (d) {
+                        d.print = false;
+                    }
+                },
+                "language": {
+                    "url": "{{ app.datatable_lang_file }}"
+                },
+                {% if attribute(app, 'dropdownAttribute') is defined %}
+                {{ main_macro.get_datatable_column(app['dropdownAttribute']) }}
+                {% endif %}
+                "bFilter": true,
+                "bPaginate": true,
+                "bInfo": true,
+                "aoColumnDefs": [
+                    {"searchable": false, "targets": [0, -2]},
+                    {"sortable": false, "targets": [0]}
+                ]
+            }).prev('.dataTables_processing').hide('');
+        }
+
+        function yelp() {
+            $(document).ready(function () {
+                
+                $('head').append('<link href="{{ app.request.baseUrl }}/css/dataTables.tableTools.css" type="text/css" rel="stylesheet" />');
+                $(document).on('click', '.btn.DTTT_button_print', function(){
+                    $("#table_container").removeClass('col-sm-offset-2');{#.parents().map(function(){$(this).css('padding-left', 0);});#}
+                });
+
+                LoadDataTablesScripts(TestTable1);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", yelp, false);
+
+    </script>
+{% endblock %}

@@ -84,7 +84,7 @@ class ExternalAdvertisingController extends \Controller\BaseStalkerController {
                     }
                 }
                 $this->app['breadcrumbs']->addItem($this->setLocalization('Congratulations!'));
-                return $this->app['twig']->render('ExternalAdvertising_register_confirm.twig');
+                return $this->app['twig']->render($this->getTemplateName('ExternalAdvertising::register_confirm'));
             }
         }
 
@@ -148,7 +148,7 @@ class ExternalAdvertisingController extends \Controller\BaseStalkerController {
         $this->app['breadcrumbs']->addItem($this->setLocalization('List of campaigns'), $this->app['controller_alias'] . '/company-list');
         $this->app['breadcrumbs']->addItem($this->setLocalization('Campaign edit'));
 
-        return $this->app['twig']->render("ExternalAdvertising_company_add.twig");
+        return $this->app['twig']->render($this->getTemplateName("ExternalAdvertising::company_add"));
     }
 
     public function settings(){

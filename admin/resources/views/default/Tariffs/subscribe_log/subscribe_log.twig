@@ -1,0 +1,93 @@
+{% extends (app['twig_theme'] ~ '/' ~ 'layout.twig') | trans %}
+{% import (app['twig_theme'] ~ '/macro/iptw_macro.twig') | trans  as main_macro %}
+{% set title = ('Subscribe log'|trans ~ (attribute(app, 'currentUser') is defined ? (': ' ~ 'Log of user'|trans ~ " " ~ app.currentUser.name ~ " (" ~ app.currentUser.mac ~ ")" ) | trans : '')) | trans %}
+
+{% block content %}
+    <div id="iptv_list">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {{ main_macro.get_filter('state', 'State'|trans, 'id', 'title', app['allPackageStates']) }}
+                {{ main_macro.get_filter('initiator', 'Initiator'|trans, 'id', 'title', app['allInitiatorRoles']) }}
+                {{ main_macro.get_filter('package', 'Package name'|trans, 'id', 'title', app['allPackageNames']) }}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class=" ">
+                <div class="box">
+                    {% if attribute(app, 'dropdownAttribute') is defined %}
+                        {{ main_macro.get_dropdown_attribute(app['dropdownAttribute']) }}
+                    {% endif %}
+                    <div class="box-content">
+                        <div class="box-content no-padding">
+                            <div class="dataTables_processing"></div>
+                            <table class="table  table-hover table-datatable" id="datatable-1">
+                                {% if attribute(app, 'dropdownAttribute') is defined %}
+                                    {{ main_macro.get_datatable_head(app['dropdownAttribute']) }}
+                                {% endif %}
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" defer>
+
+        function TestTable1() {
+            $('#datatable-1').on('xhr.dt', function (e, settings, json) {
+                if (typeof (json.data) == 'object') {
+                    for (var i in json.data) {
+                        var date = json.data[i]['modified'];
+                        if (date > 0) {
+                            date = new Date(date * 1000);
+                            json.data[i]['modified'] = date.toLocaleFormat("%b %d, %Y %H:%M");
+                        }
+
+                        if (!json.data[i]['mac'] && json.data[i]['user_id']) {
+                            json.data[i]['mac'] = json.data[i]['user_id'];
+                        }
+
+                        if (!json.data[i]['package']) {
+                            json.data[i]['package'] = '---';
+                        }
+
+                        json.data[i]['state'] = json.data[i]['state'] ? '{{ app.allPackageStates[1].title }}': '{{ app.allPackageStates[0].title }}';
+                        json.data[i]['mac'] = '<a href="{{ app.request.baseUrl }}/users/edit-users?id=' + json.data[i]['user_id'] + '">'+ json.data[i]['mac'] +'</a>';
+                    }
+                }
+            }).dataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/subscribe-log-json"
+                },
+                "language": {
+                    "url": "{{ app.datatable_lang_file }}"
+                },
+                {% if attribute(app, 'dropdownAttribute') is defined %}
+                {{ main_macro.get_datatable_column(app['dropdownAttribute']) }}
+                {% endif %}
+                "bFilter": true,
+                "bPaginate": true,
+                "bInfo": true,
+                "columnDefs": [
+                    {"searchable": false, "targets": [3, 5]}
+                ]
+            }).prev('.dataTables_processing').hide('');
+        }
+
+        function yelp() {
+            $(document).ready(function () {
+                LoadDataTablesScripts(TestTable1);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", yelp, false);
+
+    </script>
+{% endblock %}

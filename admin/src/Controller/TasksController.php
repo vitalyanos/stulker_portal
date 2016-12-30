@@ -188,7 +188,7 @@ class TasksController extends \Controller\BaseStalkerController {
         $this->app['breadcrumbs']->addItem($this->setLocalization('Tasks list'), $this->app['controller_alias'] . '/tasks-list');
         $this->app['breadcrumbs']->addItem($this->setLocalization('History of task') . " №{$this->app['task_num']} " . $this->setLocalization('in section') . " '{$this->app['taskTypeTitle']}'");
         
-        return $this->app['twig']->render("Tasks_task_detail.twig");
+        return $this->app['twig']->render($this->getTemplateName("Tasks::task_detail"));
     }
     
     public function send_task_message_video(){
@@ -258,8 +258,8 @@ class TasksController extends \Controller\BaseStalkerController {
 
         $this->app['breadcrumbs']->addItem($this->setLocalization('Tasks list'), $this->app['controller_alias'] . '/tasks-list');
         $this->app['breadcrumbs']->addItem($this->setLocalization('History of task') . " №{$this->app['task_num']} " . $this->setLocalization('in section') . " '{$this->app['taskTypeTitle']}'");
-        
-        return $this->app['twig']->render("Tasks_task_detail.twig");
+
+        return $this->app['twig']->render($this->getTemplateName("Tasks::task_detail"));
     }
     
     public function send_task_message_karaoke(){

@@ -129,7 +129,7 @@ class TariffsController extends \Controller\BaseStalkerController {
         ob_end_clean();
         $this->app['breadcrumbs']->addItem($this->setLocalization('Service packages'), $this->app['controller_alias'] . '/service-packages');
         $this->app['breadcrumbs']->addItem($this->setLocalization('Edit package'));
-        return $this->app['twig']->render('Tariffs_add_service_package.twig');
+        return $this->app['twig']->render($this->getTemplateName('Tariffs::add_service_package'));
     }
 
     public function tariff_plans() {
@@ -205,7 +205,7 @@ class TariffsController extends \Controller\BaseStalkerController {
         $this->app['planName'] = $this->plan['name'];
         $this->app['breadcrumbs']->addItem($this->setLocalization('Tariff plans'), $this->app['controller_alias'] . '/tariff-plans');
         $this->app['breadcrumbs']->addItem($this->setLocalization('Edit tariff plan'));
-        return $this->app['twig']->render('Tariffs_add_tariff_plans.twig');
+        return $this->app['twig']->render($this->getTemplateName('Tariffs::add_tariff_plans'));
     }
 
     public function subscribe_log() {

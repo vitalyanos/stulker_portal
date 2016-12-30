@@ -184,7 +184,7 @@ class NewVideoClubController extends \Controller\BaseStalkerController {
         $this->app['breadcrumbs']->addItem($this->setLocalization('Movie list'), $this->app['controller_alias'] . '/video-list');
         $this->app['breadcrumbs']->addItem($this->setLocalization('Edit movie'));
 
-        return $this->app['twig']->render('NewVideoClub_add_video.twig');
+        return $this->app['twig']->render($this->getTemplateName('NewVideoClub::add_video'));
     }
     
     public function video_schedule() {
@@ -267,7 +267,7 @@ class NewVideoClubController extends \Controller\BaseStalkerController {
         $this->app['adsTitle'] = $this->ad['title'];
         $this->app['breadcrumbs']->addItem($this->setLocalization('Advertising'), $this->app['controller_alias'] . '/video-advertise');
         $this->app['breadcrumbs']->addItem($this->setLocalization('Edit commercial'));
-        return $this->app['twig']->render('NewVideoClub_add_video_ads.twig');
+        return $this->app['twig']->render($this->getTemplateName('NewVideoClub::add_video_ads'));
     }
     
     public function video_moderators_addresses() {
@@ -326,7 +326,7 @@ class NewVideoClubController extends \Controller\BaseStalkerController {
         $this->app['modName'] = $this->mod['name'];
         $this->app['breadcrumbs']->addItem($this->setLocalization('Moderators'), $this->app['controller_alias'] . '/video-moderators-addresses');
         $this->app['breadcrumbs']->addItem($this->setLocalization('Edit moderator'));
-        return $this->app['twig']->render('NewVideoClub_add_video_moderators.twig');
+        return $this->app['twig']->render($this->getTemplateName('NewVideoClub::add_video_moderators'));
     }
 
     public function video_logs() {
@@ -2158,6 +2158,9 @@ class NewVideoClubController extends \Controller\BaseStalkerController {
         $this->postData['languages'] = (!empty($this->postData['languages']) && is_array($this->postData['languages'])) ? serialize($this->postData['languages']): serialize(array());
 
         $this->postData['status'] = 1;
+        if ($this->postData['file_type'] == 'sub') {
+            $this->postData['quality'] = '';
+        }
         $clean_old_url = FALSE;
         if (!empty($this->postData['clean_old_url'])){
             $clean_old_url = TRUE;
@@ -2935,32 +2938,46 @@ class NewVideoClubController extends \Controller\BaseStalkerController {
                         )
                     )
                 /*год*/
-                /*+*/->add('year', 'text', array('required' => TRUE, 'constraints' => array(
-                    new Assert\NotBlank(),
-                    new Assert\Regex(array(
-                            'pattern' => '/\d{4}/',
-                            'match'   => TRUE))
+                /*+*/->add('year', 'text', array(
+                        'required' => FALSE,
+                        'constraints' => array(
+                            new Assert\Regex(array(
+                                'pattern' => '/\d{4}/',
+                                'match'   => TRUE))
                             )
                         )
                     )
                 /*год окончания для сериалов*/
-                    ->add('year_end', 'text', array('constraints' => array(
+                    ->add('year_end', 'text', array(
+                        'constraints' => array(
                             new Assert\Regex(array(
                                     'pattern' => '/^(?:\d{4})$/i',
                                     'match'   => TRUE))
                             ),
-                            'required' => FALSE
+                        'required' => FALSE
                         )
                     )
-                /*------*/->add('country', 'text', array('required' => TRUE, 'constraints' => array(new Assert\NotBlank(),new Assert\Type(array('type' => 'string')))))
+                /*------*/->add('country', 'text', array(
+                        'required' => FALSE,
+                        'constraints' => array(
+                                new Assert\Type(array('type' => 'string'))
+                            )
+                        )
+                    )
                 /*длительность*/
-                /*+*/->add('duration', 'text', array('required' => TRUE, 'constraints' => array(new Assert\NotBlank(),new Assert\Type(array('type' => 'numeric')))))
+                /*+*/->add('duration', 'text', array(
+                        'required' => FALSE,
+                        'constraints' => array(
+                                new Assert\Type(array('type' => 'numeric'))
+                            )
+                        )
+                    )
                 /*режисер*/
-                /*+*/->add('director', 'text', array('required' => TRUE, 'constraints' => array(new Assert\NotBlank())))
+                /*+*/->add('director', 'text', array('required' => FALSE))
                 /*актеры*/
-                /*+*/->add('actors', 'textarea', array('required' => TRUE, 'constraints' => array(new Assert\NotBlank())))
+                /*+*/->add('actors', 'textarea', array('required' => FALSE))
                 /*описание*/
-                /*+*/->add('description', 'textarea', array('required' => TRUE, 'constraints' => array(new Assert\NotBlank())))
+                /*+*/->add('description', 'textarea', array('required' => FALSE))
                 /*громкость*/
                 /*+*//*->add('volume_correction', 'choice', array(
                             'choices' => array_combine(range(-20, 20, 1), range(-100, 100, 5)),
@@ -3129,8 +3146,8 @@ class NewVideoClubController extends \Controller\BaseStalkerController {
                         'for_sd_stb' => $data['for_sd_stb'],
                         'protocol' => !empty($data['protocol']) ? $data['protocol']: '',
                         'rtsp_url' => !empty($data['rtsp_url']) ? $data['rtsp_url']: '',
-                        'time' => @$data['duration'],
-                        'description' => $data['description'],
+                        'time' => !empty($data['duration']) ? $data['duration']: '',
+                        'description' => !empty($data['description']) ? $data['description']: '',
                         'genre_id_1' => (!empty($data['genres']) && array_key_exists(0, $data['genres']) ? $data['genres'][0] : 0),
                         'genre_id_2' => (!empty($data['genres']) && array_key_exists(1, $data['genres']) ? $data['genres'][1] : 0),
                         'genre_id_3' => (!empty($data['genres']) && array_key_exists(2, $data['genres']) ? $data['genres'][2] : 0),
@@ -3140,10 +3157,10 @@ class NewVideoClubController extends \Controller\BaseStalkerController {
                         'cat_genre_id_3' => (array_key_exists(2, $data['cat_genre_id']) ? $data['cat_genre_id'][2] : 0),
                         'cat_genre_id_4' => (array_key_exists(3, $data['cat_genre_id']) ? $data['cat_genre_id'][3] : 0),
                         'category_id' => $data['category_id'],
-                        'director' => $data['director'],
-                        'actors' => $data['actors'],
+                        'director' => !empty($data['director']) ? $data['director']: '',
+                        'actors' => !empty($data['actors']) ? $data['actors']: '',
                         'status' => 1,
-                        'year' => $data['year'],
+                        'year' => !empty($data['year']) ? $data['year']: '',
                         'year_end' => !empty($data['year_end']) ? $data['year_end']: '',
                         'volume_correction' => array_key_exists('genres', $data) ? (int)$data['volume_correction']: 0,
                         'kinopoisk_id' => $data['kinopoisk_id'],
@@ -3156,7 +3173,7 @@ class NewVideoClubController extends \Controller\BaseStalkerController {
                         'high_quality' => $data['high_quality'],
                         'low_quality' => $data['low_quality'],
                         'comments' => $data['comments'],
-                        'country' => $data['country'],
+                        'country' => !empty($data['country']) ? $data['country']: '',
                         'is_series' => $data['is_series'],
                         'autocomplete_provider' => !empty($data['autocomplete_provider']) ? $data['autocomplete_provider']: NULL
                     );

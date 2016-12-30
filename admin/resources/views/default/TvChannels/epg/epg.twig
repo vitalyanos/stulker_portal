@@ -1,0 +1,411 @@
+{% extends (app['twig_theme'] ~ '/' ~ 'layout.twig') | trans %}
+{% import (app['twig_theme'] ~ '/macro/iptw_macro.twig') | trans  as main_macro %}
+{% set active = 'settings' %}
+{% set title = ('IPTV channels'|trans ~ ': ' ~ 'EPG'|trans) | trans %}
+
+{% block content %}
+    <div id="iptv_list">
+        <div class="row">
+           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="pull-right">
+                    <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/add-epg-item" class="btn btn-success  pull-right no_context_menu" id="add_epg_item">{{ 'Add EPG'|trans }}</a>
+                </div>
+                <div class="pull-right">
+                    <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/update-epg" class="btn btn-default pull-right main_ajax no_context_menu" data-id="all">{{ 'Update EPG'|trans }}</a>
+                </div>
+                <div class="pull-right">
+                    <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/update-epg" class="btn btn-default pull-right main_ajax no_context_menu" data-id="all" data-force="1">{{ 'Force update of EPG'|trans }}</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class=" auto-height">
+                    <div class="box-name">
+                        <div class="row">
+                            <div class="col-xs-10 col-sm-8 col-sm-offset-2 text-center bg-warning">
+                                <span class="text_black">{{ 'Force update of EPG - complete EPG update for all channels'|trans }}.</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-10 col-sm-8 col-sm-offset-2 text-center bg-warning">
+                                <span class="text_black">{{ 'Update EPG – consider only the new/last changes'|trans }}.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="no-move"></div>
+                </div>
+                <div class="box">
+                    {% if attribute(app, 'dropdownAttribute') is defined %}
+                    {{ main_macro.get_dropdown_attribute(app['dropdownAttribute']) }}
+                    {% endif %}
+                    <div class="box-content">
+                        <div class="box-content no-padding">
+                            <div class="row">
+                                <div class="dataTables_processing"></div>
+                                <table class="table  table-hover table-datatable" id="datatable-1">
+                                    {% if attribute(app, 'dropdownAttribute') is defined %}
+                                        {{ main_macro.get_datatable_head(app['dropdownAttribute']) }}
+                                    {% endif %}
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalbox_ad">
+        <div class="devoops-modal">
+            <div class="devoops-modal-header">
+                <div class="modal-header-name">
+                    <span></span>
+                </div>
+                <div class="box-icons">
+                    <a class="close-link">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <form class="form-horizontal" role="form" id="epg_form" action="{{ app.request.baseUrl }}/{{ app.controller_alias }}/save-epg-item">
+                <div class="devoops-modal-inner">
+                    <div class="box">
+                        <div class="box-content">
+                            <!-- name -->
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label col-xs-offset-1">{{ 'URL'|trans }}<span class="icon-required">*</span></label>
+                                <div class="col-xs-10 col-sm-8 no-padding">
+                                    <div class=" col-xs-10 col-sm-10 ">
+                                        <input type="hidden" name="id" id="form_id" class="own_fields" required="required">
+                                        <input type="text" name="uri" id="form_uri" data-validation=required   class='form-control own_fields' data-validation="required">
+                                        <div></div>
+                                    </div>
+                                    <span class="help-inline col-xs-12 col-sm-12">
+                                        <span class="small txt-default">http://www.example.com/export/export.xml</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label col-xs-offset-1">{{ 'Prefix'|trans }}</label>
+                                <div class="col-xs-10 col-sm-8 no-padding">
+                                    <div class=" col-xs-10 col-sm-10 ">
+                                        <input type="text" name="id_prefix" id="form_id_prefix" class='form-control own_fields'>
+                                        <div></div>
+                                    </div>
+                                    <span class="help-inline col-xs-10 col-sm-10">
+                                        <span class="small txt-default">{{ 'Prefix is necessary to distinguish the EPG source in case, if the following XNLTV ID is stated in several sources'|trans }}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label col-xs-offset-1">{{ 'Initial state'|trans }}<span class="icon-required">*</span></label>
+                                <div class="col-xs-10 col-sm-8 no-padding">
+                                    <div class=" col-xs-10 col-sm-10 ">
+                                        <select class="populate placeholder own_fields" data-validation=required   name="status" id="s2_status" >
+                                            <option value="1">{{ 'Published'|trans }}</option>
+                                            <option value="0">{{ 'Unpublished'|trans }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label col-xs-offset-1">{{ 'Languages by priority'|trans }}</label>
+                                <div class="col-sm-10" style="margin-left: 8% !important">
+                                    <input type="hidden" class="own_fields" name="lang_code" value="">
+                                    <fieldset id="letters" class="col-sm-12">
+                                        <div class="col-sm-5">
+                                            <label class="col-sm-12 text-center">{{ 'Available'|trans }}</label>
+                                            <select size="9" class="left populate placeholder col-sm-12" multiple="multiple" name="s2_lang_code_available" id="s2_lang_code_available" >
+                                                {% if attribute(app, 'allLanguages') is defined %}
+                                                    {% for code, lang in app.allLanguages %}
+                                                        <option id="opt_{{ code }}" value="{{ code }}">{{ lang }}</option>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2 ">
+                                            <br><br><br>
+                                            <button type="button" class="add btn btn-block btn-default"> &gt; </button>
+                                            <button type="button" class="remove btn btn-block btn-default"> &lt; </button>
+                                            <button type="button" class="remove all btn btn-block btn-default"> &lt;&lt; {{ 'all'|trans }}</button>
+                                        </div>
+                                        <div class="col-sm-5">
+                                            <label class="col-sm-12 text-center">{{ 'Selected'|trans }}</label>
+                                            <select size="9" class="right populate placeholder col-sm-12" multiple="multiple" name="s2_lang_code" id="s2_lang_code" >
+                                            </select>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <span class="help-inline col-xs-12 col-sm-12 text-center">
+                                    <span class="small txt-default">{{ 'The maximum number of languages that can be selected - 5'|trans }}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="devoops-modal-bottom">
+                    <div class="box">
+                        <div class="box-content">
+                            <div class="row">
+                                <div class="col-xs-11 col-sm-11 col-sm-offset-1 col-xs-offset-1">
+                                    <button type="submit" class="btn btn-success col-sm-3 col-sm-offset-4">{{ 'Save'|trans }}</button>
+                                    <button type="reset" class="btn btn-default col-sm-3  col-sm-offset-1" > {{ 'Cancel'|trans }} </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript" defer>
+
+        var select2Opt = {minimumResultsForSearch: -1, dropdownAutoWidth: false, width: '100%'};
+
+        function DemoSelect2() {
+            $('#s2_status').select2(select2Opt);
+
+        }
+
+        function TestTable1() {
+            $('#datatable-1').on('xhr.dt', function (e, settings, json) {
+                if (typeof (json.data) == 'object' && json.data.length >0) {
+                    var date;
+                    for (var i in json.data) {
+                        var id = json.data[i].id;
+                        var status = json.data[i].status;
+                        json.data[i].status = (status == 1 ?"<span class='txt-success'>{{ 'Published'|trans }}</span>":"<span>{{ 'Unpublished'|trans }}</span>");
+                        json.data[i].operations = "<div class='col-xs-3 col-sm-8'>\n\
+                                                        <a href='#' class='dropdown-toggle no_context_menu' data-toggle='dropdown'>\n\
+                                                            <i class='pull-right fa fa-cog'></i>\n\
+                                                        </a>\n\
+                                                        <ul class='dropdown-menu pull-right'>\n\
+                                                            <li>\n\
+                                                                <a class='main_ajax no_context_menu' href='{{ app.request.baseUrl }}/{{ app.controller_alias }}/epg-list-json' data-id='" + id + "'>\n\
+                                                                    <span>{{ 'Edit'|trans }}</span>\n\
+                                                                </a>\n\
+                                                            </li>\n\
+                                                            <li>\n\
+                                                                <a class='main_ajax no_context_menu' href='{{ app.request.baseUrl }}/{{ app.controller_alias }}/toggle-epg-item-status' data-id='" + id + "' data-status='" + status + "'>\n\
+                                                                    <span>" + (status == 1? '<span>{{ 'Unpublish'|trans }}</span>':'<span>{{ 'Publish'|trans }}</span>') + "</span>\n\
+                                                                </a>\n\
+                                                            </li>\n\
+                                                            <li>\n\
+                                                                <a class='main_ajax no_context_menu' href='{{ app.request.baseUrl }}/{{ app.controller_alias }}/remove-epg-item' data-id='" + id + "'>\n\
+                                                                    <span> {{ 'Delete'|trans }} </span>\n\
+                                                                </a>\n\
+                                                            </li>\n\
+                                                        </ul>\n\
+                                                    </div>";
+                        date = json.data[i]['updated'];
+                        if (date > 0) {
+                            date = new Date(date * 1000);
+                            json.data[i]['updated'] = date.toLocaleFormat("%b %d, %Y %H:%M");
+                        }
+                    }
+                }
+            }).dataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/epg-list-json"
+                },
+                "language": {
+                    "url": "{{ app.datatable_lang_file }}"
+                },
+                {% if attribute(app, 'dropdownAttribute') is defined %}
+                {{ main_macro.get_datatable_column(app['dropdownAttribute']) }}
+                {% endif %}
+                "bFilter": true,
+                "bPaginate": true,
+                "bInfo": true,
+                "columnDefs": [
+                    {className: "action-menu", "targets": [ -1 ] },
+                    {"searchable": false, "targets": [-1, -2, -3]},
+                    {"sortable": false, "targets": [-1]}
+                ]
+            }).prev('.dataTables_processing').hide('');
+        }
+
+        function yelp() {
+            $(document).ready(function () {
+                $(document).on('click', "a.main_ajax", function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    $("#modalbox").data('complete', 0);
+                    var sendData = $(this).data();
+                    ajaxPostSend($(this).attr('href'), sendData, false, false);
+                    $(this).closest('div.open').removeClass('open');
+                    return false;
+                });
+
+                $("#form_reset").on('click', function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    $(this).closest('form').get(0).reset();
+    {#                    $("#cmd_data").find("tr:visible").remove();#}
+                    return false;
+                });
+
+                var conf = {
+                    form: '#epg_form',
+                    lang : '{{ app.js_validator_language }}',
+                    showHelpOnFocus : true,
+                    validateHiddenInputs: true,
+                    ignore: ['.ignore'],
+                    modules: 'jsconf',
+                    onSuccess: function () {
+                        var sendData = new Object();
+                        var lengthObj = 0;
+                        var arr = [];
+                        $("#s2_lang_code option").each(function(){
+                            arr.push($(this).val());
+                        });
+                        $("input[name='lang_code']").val(arr.join(','));
+                        var form_fields = $("#modalbox_ad input.own_fields:not(:disabled), #s2_status");
+                        form_fields.each(function () {
+                            sendData[this.name] = $(this).val();
+                            if ($(this).val() || !$(this).is("[required]")) {
+                                lengthObj++;
+                            }
+                        });
+                        if (lengthObj < form_fields.length) {
+                            JSErrorModalBox({msg: '{{ 'Fill in the required fields'|trans }}'});
+                            return false;
+                        }
+                        ajaxPostSend($("#modalbox_ad form").attr('action'), sendData, false, false);
+                        return false;
+                    },
+                    onError: function () {
+                        return false;
+                    }
+                };
+                $.validate(conf);
+
+                $("#modalbox_ad button[type='submit']").on('click', function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if ($("#epg_form").isValid({}, conf, true)) {
+                        conf.onSuccess();
+                    } else {
+                        conf.onError();
+                    }
+                    return false;
+                });
+
+                $("#add_epg_item").on("click", function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    closeModalBox();
+                    $("#modalbox_ad").find(".modal-header-name").children('span').text('{{ 'Add EPG'|trans }}');
+                    $("#modalbox_ad .own_fields").prop("disabled", false).removeAttr('disabled').val('');
+                    /*$("#modalbox_ad input[type='hidden']:not(.not_disabled)").attr('disabled', 'disabled').val('');*/
+                    $("#form_id").attr('disabled', 'disabled').val('');
+                    $('#s2_status').val($('#s2_status option:first').val());
+                    $('button.remove.all').click();
+                    $('#s2_lang_code_available option.old').removeClass('old').addClass('new');
+                    $('#form_uri').next('div').removeClass('bg-danger').css('visibility', 'hidden').html('&nbsp;');
+                    $('#form_id_prefix').next('div').removeClass('bg-danger').css('visibility', 'hidden').html('&nbsp;');
+                    $('#epg_form').find('[type="submit"]').prop('disabled', false);
+                    $("#modalbox_ad").show();
+                    //        $(this).closest('.form-group').find('tbody tr:hidden').show();
+                    return false;
+                });
+
+                $(document).on('change keyup', '#form_uri', function (e) {
+                    var _this = $(this);
+                    _this.next('div').removeClass('bg-danger').css('visibility', 'hidden').html('&nbsp;');
+                    _this.closest('form').find('[type="submit"]').prop('disabled', false);
+
+                    if (_this.val()) {
+                        ajaxPostSend("{{ app.request.baseUrl }}/{{ app.controller_alias }}/epg-check-uri", {param: _this.val(), epgid: $('#form_id').val()});
+                    }
+                });
+
+                $(document).on('change keyup', '#form_id_prefix', function(e){
+                    var _this = $(this);
+                    _this.next('div').removeClass('bg-danger').css('visibility', 'hidden').html('&nbsp;');
+                    _this.closest('form').find('[type="submit"]').prop('disabled', false);
+
+                    if (_this.val()) {
+                        ajaxPostSend("{{ app.request.baseUrl }}/{{ app.controller_alias }}/epg-check-prefix", {epg_id: $("#form_id").val(), prefix: _this.val()});
+                    }
+
+                });
+
+                $('button.add').click(resetAddOption);
+                $(document).on('dblclick', '#s2_lang_code_available option', resetAddOption);
+
+                LoadDataTablesScripts(TestTable1);
+                LoadSelect2Script(DemoSelect2);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", yelp, false);
+
+        var resetAddOption = function(){
+            if ( $('#s2_lang_code option').length > 5) {
+                JSErrorModalBox({msg: "{{ 'Max count of languages 5'|trans }}"});
+                var lastOption;
+                while($('#s2_lang_code option').length > 5){
+                    lastOption = $('#s2_lang_code option:last-of-type');
+                    $('#s2_lang_code_available').append(lastOption);
+                    $('#s2_lang_code_available').sortBoxes();
+                }
+            }
+        };
+
+        var setEPGModal = function (data) {
+            closeModalBox();
+            $("#modalbox_ad").find(".modal-header-name").children('span').text('{{ 'Edit EPG'|trans }}');
+            $('#form_id_prefix').next('div').removeClass('bg-danger').css('visibility', 'hidden').html('&nbsp;');
+            $('#form_uri').next('div').removeClass('bg-danger').css('visibility', 'hidden').html('&nbsp;');
+            $('#epg_form').find('[type="submit"]').prop('disabled', false);
+            if (data.data.length == 1) {
+                var row = data.data[0];
+                for (var field_name in row) {
+                    $("#modalbox_ad .own_fields[name='" + field_name + "']").val(row[field_name]);
+                }
+            }
+            $("#modalbox_ad input").removeAttr('disabled');
+            $('#s2_lang_code_available').append($('#s2_lang_code option'));
+            $('#s2_lang_code').empty();
+            $('#s2_lang_code_available').sortBoxes();
+            if (data.data[0]['lang_code']) {
+
+                $('#s2_lang_code_available option.old').removeClass('old').addClass('new');
+                $(data.data[0]['lang_code'].split(',')).each(function (num, item) {
+                    /*$('#s2_lang_code option[value="' + item + '"]');*/
+                    $('#s2_lang_code').append($('#s2_lang_code_available option[value="' + item + '"]'));
+                    $('#s2_lang_code_available option[value="' + item + '"]').remove();
+                });
+            }
+            $('#s2_lang_code_available').sortBoxes();
+            $("#modalbox_ad").show();
+        };
+
+        var manageEPG = function (obj) {
+            $("#modalbox_ad").click();
+            JSSuccessModalBox(obj);
+            $('#datatable-1').DataTable().ajax.reload();
+        };
+
+        var manageEPGError = function (obj) {
+            JSErrorModalBox(obj);
+        };
+
+        function closeModalBox(){
+            JScloseModalBox();
+        }
+
+        var errAction = function(){
+            JSErrorModalBox({msg: '<span>{{ 'Failed'|trans }}!</span>'});
+        };
+    </script>
+{% endblock %}

@@ -126,7 +126,7 @@ class BroadcastServersController extends \Controller\BaseStalkerController {
         $this->app['breadcrumbs']->addItem($this->setLocalization('Streaming area'), "{$this->workURL}/{$this->app["controller_alias"]}/broadcast-zone-list");
         $this->app['breadcrumbs']->addItem($this->setLocalization('Edit area'));
         
-        return $this->app['twig']->render('BroadcastServers_add_zone.twig');
+        return $this->app['twig']->render($this->getTemplateName('BroadcastServers::add_zone'));
     }
 
     //----------------------- ajax method --------------------------------------

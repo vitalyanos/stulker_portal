@@ -1,0 +1,267 @@
+{% extends (app['twig_theme'] ~ '/' ~ 'layout.twig') | trans %}
+{% import (app['twig_theme'] ~ '/macro/iptw_macro.twig') | trans  as main_macro %}
+{% set title = ('Events'|trans ~ ': ' ~ 'list of filters of users'|trans) | trans %}
+
+{% block content %}
+    <div id="iptv_list">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {{ main_macro.get_filter('admin_id', 'Author'|trans, 'id', 'login', app['allAdmins'], 2) }}
+                <div class="pull-right">
+                    <a href="#" class="btn btn-success pull-right no_context_menu" id="msg_tpl_create">{{ 'Create new message template'|trans }}</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box">
+                {% if attribute(app, 'dropdownAttribute') is defined %}
+                    {{ main_macro.get_dropdown_attribute(app['dropdownAttribute']) }}
+                {% endif %}
+                <div class="box-content">
+                    <div class="box-content no-padding">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12">
+                                <div class="dataTables_processing"></div>
+                                <table class="table  table-hover table-datatable" id="datatable-1">
+                                    {% if attribute(app, 'dropdownAttribute') is defined %}
+                                        {{ main_macro.get_datatable_head(app['dropdownAttribute']) }}
+                                    {% endif %}
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" defer="defer">
+
+        var conf = {
+            form: '#save_message_template',
+            lang : '{{ app.js_validator_language }}',
+            showHelpOnFocus : true,
+            validateHiddenInputs: true,
+            ignore: ['.ignore'],
+            modules: 'jsconf',
+            onSuccess: function () {
+                var sendData = new Object();
+                $("#modalbox").find('form').find(".own_fields:not(:disabled)").each(function () {
+                    if ($(this).val()) {
+                        if (this.type.toUpperCase() != 'CHECKBOX' || this.checked) {
+                            sendData[this.name] = $(this).val();
+                        }
+                    }
+                });
+                ajaxPostSend($("#modalbox").find('form').attr('action'), sendData, false, false);
+                return false;
+            },
+            onError: function () {
+                return false;
+            }
+        };
+
+        function TestTable1() {
+            $('#datatable-1').on('xhr.dt', function (e, settings, json) {
+                if (typeof (json.data) == 'object') {
+                    for (var i in json.data) {
+                        var id = json.data[i].id;
+
+                        json.data[i].login = '<a href="#" class="no_context_menu">' + json.data[i].login + '</a>';
+                        json.data[i].title = '<a class="main_ajax no_context_menu" href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/message-templates-list-json" data-id="'+ id +'">' + json.data[i].title + '</a>';
+
+                        if (json.data[i]['created'] != 0) {
+                            var dateOn = new Date(json.data[i]['created']);
+                            json.data[i]['created'] = dateOn.toLocaleFormat("%b %d, %Y");
+                        }
+                        if (json.data[i]['edited'] != 0) {
+                            var dateOn = new Date(json.data[i]['edited']);
+                            json.data[i]['edited'] = dateOn.toLocaleFormat("%b %d, %Y");
+                        }
+
+                        json.data[i].operations = "<div class='col-xs-3 col-sm-8'>\n\
+                                                        <a href='#' class='dropdown-toggle no_context_menu' data-toggle='dropdown'>\n\
+                                                            <i class='pull-right fa fa-cog'></i>\n\
+                                                        </a>\n\
+                                                        <ul class='dropdown-menu pull-right'>\n\
+                                                            <li>\n\
+                                                                <a class='main_ajax no_context_menu' href='{{ app.request.baseUrl }}/{{ app.controller_alias }}/message-templates-list-json' data-id='"+ id +"'>\n\
+                                                                    <span> {{ 'Edit'|trans }} </span>\n\
+                                                                </a>\n\
+                                                            </li>\n\
+                                                            <li>\n\
+                                                                <a class='main_ajax no_context_menu' href='{{ app.request.baseUrl }}/{{ app.controller_alias }}/remove-template' data-id='" + id + "'>\n\
+                                                                    <span> {{ 'Delete'|trans }} </span>\n\
+                                                                </a>\n\
+                                                            </li>\n\
+                                                        </ul>\n\
+                                                    </div>";
+                    }
+                }
+            }).dataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/message-templates-list-json"
+                },
+                "language": {
+                    "url": "{{ app.datatable_lang_file }}"
+                },
+                {% if attribute(app, 'dropdownAttribute') is defined %}
+                {{ main_macro.get_datatable_column(app['dropdownAttribute']) }}
+                {% endif %}
+                "bFilter": true,
+                "bPaginate": true,
+                "bInfo": true,
+                "columnDefs": [
+                    { className: "action-menu", "targets": [ -1 ] },
+                    {"searchable": false, "targets": [-1, -2, -3]},
+                    {"sortable": false, "targets": [-1]}
+                ]
+            }).prev('.dataTables_processing').hide('');
+        }
+
+        function yelp() {
+            $(document).ready(function () {
+
+                $.validate(conf);
+
+                $(document).on('click', "a.main_ajax[disabled!='disabled']", function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    $("#modalbox").data('complete', 0);
+                    var sendData = $(this).data();
+                    ajaxPostSend($(this).attr('href'), sendData, false, false, true);
+                    $(this).closest('div.open').removeClass('open');
+                    return false;
+                });
+
+                $(document).on('click', "#modalbox, #modalbox a.close-link, #modalbox a.close-link *", function(e){
+                    if (e.currentTarget != e.target) {
+                        return;
+                    }
+                    e.stopPropagation();
+                    e.preventDefault();
+                    closeModalBox();
+                    return false;
+                });
+
+                $(document).on("click", "#msg_tpl_create", function(e){
+                    if (e.currentTarget != e.target) {
+                        return;
+                    }
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    getTemplateForm();
+
+                    $('#modalbox').show();
+
+                    return false;
+                });
+
+                $(document).on('click', "#modalbox button[type='submit']", function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if ($(conf.form).isValid({}, conf, true)) {
+                        conf.onSuccess();
+                    } else {
+                        conf.onError();
+                    }
+
+                    return false;
+                });
+
+                $(document).on('click', "#modalbox button[type='reset']", function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    closeModalBox();
+                    return false;
+                });
+
+                LoadDataTablesScripts(TestTable1);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", yelp, false);
+              
+        function closeModalBox(){
+            $("#modalbox").hide();
+            $('#modalbox').find('.modal-header-name span').empty();
+            $('#modalbox').find('.devoops-modal-inner').empty();
+            $('#modalbox').find('.devoops-modal-bottom').empty();
+        }
+
+        function getTemplateForm(templateName){
+            $("#modalbox").data('complete', 1);
+            if (templateName) {
+                $('#modalbox').find('.modal-header-name span').text('{{ 'Editing template'|trans }} "' + templateName + '"');
+            } else {
+                $('#modalbox').find('.modal-header-name span').text('{{ 'New template'|trans }}');
+            }
+
+            $('#modalbox').find('.devoops-modal-inner').html($("#modal_form_body").text());
+            $('#modalbox').find('.devoops-modal-bottom').html($("#modal_form_buttons").text());
+        }
+
+        var fillModalForm = function(data){
+            closeModalBox();
+            getTemplateForm(data.data[0]['title']);
+            if (data.data.length == 1) {
+                var row = data.data[0];
+                for (var field_name in row) {
+                    var field = $("#modalbox .own_fields[name='msg_tpl[" + field_name + "]']");
+                    if (field.length != 0) {
+                        field.val(row[field_name]);
+                    }
+                }
+            }
+            $('#modalbox').show();
+        }
+
+    </script>
+
+    <script type="text/template" id="modal_form_body">
+        <div class="box-content">
+            <form class="form-horizontal" id="save_message_template" role="form" action="{{ app.request.baseUrl }}/{{ app.controller_alias }}/save-message-template">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label col-sm-offset-1">{{ 'Template name'|trans }}<span class="icon-required">*</span></label>
+                    <div class="col-xs-10 col-sm-6">
+                        <span class="col-xs-12 col-sm-12">
+                            <input type="hidden" class="own_fields" name="msg_tpl[id]" value="">
+                            <input type="hidden" class="own_fields" name="msg_tpl[admin_id]" value="{% if attribute(app, 'user_id') is defined %}{{ app.user_id }}{% endif %}">
+                            <input type="text" class="own_fields form-control" name="msg_tpl[title]" value="" data-validation=required>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label col-sm-offset-1">{{ 'Header'|trans }}<span class="icon-required">*</span></label>
+                    <div class="col-xs-10 col-sm-6">
+                        <span class="col-xs-12 col-sm-12">
+                            <input type="text" class="own_fields form-control" name="msg_tpl[header]" value="" data-validation=required>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label col-sm-offset-1">{{ 'Text'|trans }}<span class="icon-required">*</span></label>
+                    <div class="col-xs-10 col-sm-6">
+                        <span class="col-xs-12 col-sm-12">
+                            <textarea class="own_fields form-control" name="msg_tpl[body]" data-validation=required ></textarea>
+                        </span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </script>
+
+    <script type="text/template" id="modal_form_buttons">
+        <div class="pull-right no-padding">&nbsp;</div>
+        <div class="pull-right no-padding">
+            <button type="submit" class="btn btn-success pull-right">{{ 'Save'|trans }}</button>
+            <button type="reset" class="btn btn-default pull-right" >{{ 'Cancel'|trans }}</button>
+        </div>
+    </script>
+{% endblock %}

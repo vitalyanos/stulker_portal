@@ -598,7 +598,12 @@ $(document).ready(function () {
         $('#modalbox_clone').find('.devoops-modal-bottom').empty();
         return false;
     });
-    
+
+    $(document).on( "contextmenu", "a.no_context_menu", function(e){
+        e.stopPropagation();
+        e.preventDefault();
+    });
+
 });
 
 function getURLFilterString(obj, href){
@@ -957,6 +962,12 @@ function updateTableRow(obj){
         if (dTRow) {
             var oTable = dTRow.closest('table').dataTable();
             oTable.fnUpdateCurrentRow(dTRow, obj);
+            var curOption = {
+                ddMenuMaxHeight: 0,
+                ddMenuHeight: 0,
+                trParentOffset: 0
+            };
+            checkMenuItemPosition(dTRow, curOption);
         }
     } catch (e){
         console.log(e);
@@ -1030,3 +1041,12 @@ function checkDataError(obj){
         JSErrorModalBox({msg: obj.chk_rezult});
     }
 }
+
+jQuery.fn.getEvents = function() {
+    if (typeof(jQuery._data) == 'function') {
+        return jQuery._data(this.get(0), 'events') || {};
+    } else if (typeof(this.data) == 'function') { // jQuery version < 1.7.?
+        return this.data('events') || {};
+    }
+    return {};
+};

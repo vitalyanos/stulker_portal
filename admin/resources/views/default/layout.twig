@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="{% if attribute(app, 'locale') is defined and app['locale']|length == 2 %}{{ app['locale'] }}{% else %}en{% endif %}">
+    <head>
+        {% block head %}
+            <meta charset="utf-8">
+            <title>{{title}}</title>
+<<<<<<< HEAD:admin/resources/views/layout.twig
+            {% set colStyles = [] %}
+            {% concatJS(colStyles) | minimize %}
+            
+            {% include "basic_templates/meta.twig" %}
+            {% include "basic_templates/css.twig" %}
+=======
+            {% include (app['twig_theme'] ~ '/' ~ "basic_templates/meta.twig") | trans %}
+            {% include (app['twig_theme'] ~ '/' ~ "basic_templates/css.twig") | trans %}
+>>>>>>> 1c8c40b4552858d9b94480fc030c43c33c25a63e:admin/resources/views/default/layout.twig
+        {% endblock head %}
+    </head>
+    <body>
+        {% block container %}
+           {% block maincontainer %}
+                <!--Start Container-->
+				<div id="wrapper">
+				{% block header %}
+<<<<<<< HEAD:admin/resources/views/layout.twig
+                    {% include "basic_templates/header.twig" %}
+				{% endblock header %}
+					
+                    {% block sidebar %}
+                            {% include "basic_templates/sidebar.twig" %}
+=======
+                {% include (app['twig_theme'] ~ '/' ~ "basic_templates/header.twig") | trans %}
+				{% endblock header %}
+									{% block sidebar %}
+                            {% include (app['twig_theme'] ~ '/' ~ "basic_templates/sidebar.twig") | trans %}
+>>>>>>> 1c8c40b4552858d9b94480fc030c43c33c25a63e:admin/resources/views/default/layout.twig
+                    {% endblock sidebar %}
+                    <div id="main" class="container-fluid">
+
+                        <div class="row">
+
+                            <!--Start Content-->
+                            <div id="main-wrapper" >
+                                <div id="content" class="content">
+                                    <div class="preloader">
+                                        <img src="img/devoops_getdata.gif" class="devoops-getdata" alt="preloader"/>
+                                    </div>
+                                    <div id="ajax-content">
+                                        <div class="row">
+                                            <div class="box-content">
+                                                <div id="breadcrumb">
+                                                    {{ renderBreadCrumbs() }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% block content %}{% endblock %}
+                                    </div>
+                                </div>
+                            </div>
+                            <!--End Content-->
+
+                        </div>
+                    </div>
+				 {% block footer %}
+                {% include (app['twig_theme'] ~ '/' ~ "basic_templates/footer_js.twig") | trans %}
+            {% endblock footer %}
+			
+                <!--End Container--></div>
+            {% endblock maincontainer %}
+
+           
+        {% endblock container %}
+			
+    </body>
+</html>
