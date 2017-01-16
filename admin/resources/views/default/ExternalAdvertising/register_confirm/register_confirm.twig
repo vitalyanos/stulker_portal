@@ -10,7 +10,7 @@
                     <div class="box-content">
                         <div class="row" style="padding: 15px;">
                             <div class="col-sm-3 center">
-                                <img src="{{app.request.baseUrl}}/img/manager.png" class="img-thumbnail no-border">
+                                <img src="{{app.request_context.baseUrl}}/img/manager.png" class="img-thumbnail no-border">
                             </div>
                             <div class="col-sm-9 no-padding-left">
                                 <h4><strong>{{ 'Thanks for your interest!'|trans }}</strong></h4>
@@ -24,7 +24,7 @@
                                     {{ 'Stalker Team'|trans }}
                                 </p>
                                 <p>
-                                    <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/settings">{{ 'Continue'|trans }}</a>
+                                    <a href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/settings">{{ 'Continue'|trans }}</a>
                                 </p>
                             </div>
                         </div>

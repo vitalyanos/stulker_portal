@@ -4,7 +4,7 @@
 
 {% block container %}
 <style>
-body {background-color: #c0c0c0;}
+body {background-color: #fff;}
 </style>
     <div class="container">
         <div id="" style="margin-top:210px;"
@@ -31,7 +31,7 @@ body {background-color: #c0c0c0;}
             </div>
         </div>
     </div>
-    <script src="{{app.request.baseUrl}}/plugins/jquery/jquery-2.1.0.min.js"></script>
+    <script src="{{app.request_context.baseUrl}}/plugins/jquery/jquery-2.1.0.min.js"></script>
     <script type="text/javascript" defer="defer">
         $(document).ready(function(){
             localStorage.removeItem('opinionCheck');

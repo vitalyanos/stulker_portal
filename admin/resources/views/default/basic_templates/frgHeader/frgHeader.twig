@@ -1,5 +1,6 @@
 {# empty Twig template #}
 <!--Start Header-->
+
 <div id="modalbox">
     <div class="devoops-modal">
         <div class="devoops-modal-header">
@@ -18,11 +19,12 @@
         </div>
     </div>
 </div>
+
 <header class="navbar">
     <div class="container-fluid expanded-panel">
         <div class="row">
             <div id="logo" class="col-xs-2 col-sm-2">
-                <a href="{{app.request.baseUrl}}/"><img src="img/logo.png"></a>
+                <a href="{{app.request_context.baseUrl}}/"><img src="img/logo.png"></a>
             </div>
            <div id="top-panel" class="pull-right  col-xs-10 col-sm-10">
                 <div class="row pull-right ">
@@ -49,7 +51,7 @@
 										{% else %}
 											{% set parent_alias = '' %}
 										{% endif %}
-										<a href="{{ app.request.baseUrl }}/{{ parent_alias ? (parent_alias ~ '/') | trans}}{{ item_action.alias ? item_action.alias }}">
+										<a href="{{ app.request_context.baseUrl }}/{{ parent_alias ? (parent_alias ~ '/') | trans}}{{ item_action.alias ? item_action.alias }}">
 										{% if item_action.icon %}
 											<i class="{{ item_action.icon }}"></i> 
 										{% endif %}

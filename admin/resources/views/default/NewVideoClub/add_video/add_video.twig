@@ -4,7 +4,7 @@
 
 {% block content %}
     <div id="add_channel" class="new_video_club">
-        {{ form_start(app['form'], {'method': 'POST', 'action': (app.request.baseUrl ~ '/' ~ app.controller_alias  ~ '/' ~ app.action_alias) | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
+        {{ form_start(app['form'], {'method': 'POST', 'action': (app.request_context.baseUrl ~ '/' ~ app.controller_alias  ~ '/' ~ app.action_alias) | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
         <div class="bg-danger">
             <div class="bg-danger">
                 {{ form_errors(app['form']) }}
@@ -323,7 +323,7 @@
                                         <input type="file" name="files" style="opacity: 0;" multiple>
                                     </div>
                                     <img class="img-rounded channel-logo" src="{% if app['form'].cover_id.vars.value %}{{ app['curr_cover_dir'] }}/{{ app['form'].cover_id.vars.value }}{{ app['cover_ext'] }}{% elseif app['form'].cover_big.vars.value %}{{ app['form'].cover_big.vars.value }}{% endif %}" alt="" style="width: 100%;">
-                                    <a id="delete_cover" class="no_context_menu" href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/delete-cover" data-cover_id="{% if app['form'].cover_id.vars.value %}{{ app['form'].cover_id.vars.value }}{% endif %}">
+                                    <a id="delete_cover" class="no_context_menu" href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/delete-cover" data-cover_id="{% if app['form'].cover_id.vars.value %}{{ app['form'].cover_id.vars.value }}{% endif %}">
                                         <span class="txt-primary">{{ 'Delete cover'|trans }}</span>
                                     </a>
                                 </div>
@@ -392,7 +392,7 @@
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 pull-right">
                             {{ form_widget(app['form'].save, { 'label': 'Save'|trans, attr: {'class': 'btn btn-success   pull-right'}}) }}
-                            <a href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/video-list" class="btn btn-default  pull-right"> {{ 'Cancel'|trans }} </a>
+                            <a href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/video-list" class="btn btn-default  pull-right"> {{ 'Cancel'|trans }} </a>
                         </div>
                     </div>
                 </div>
@@ -638,7 +638,7 @@
 
         function initFileUploader(){
             $('#cover_container, div[id^="video_episodes_"]').fileupload({
-                url: '{{ app.request.baseUrl }}/{{ app.controller_alias }}/edit-cover',
+                url: '{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/edit-cover',
                 type: 'POST',
                 autoUpload: false,
                 multipart: true,
@@ -849,7 +849,7 @@
                             event: e.type
                         };
 
-                        ajaxPostSend('{{ app.request.baseUrl }}/{{ app.controller_alias }}/save-season-series-names', params, false, false);
+                        ajaxPostSend('{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/save-season-series-names', params, false, false);
                         $(this).data('is_sended', 1);
                         return;
                     }
@@ -915,7 +915,7 @@
                             season_id: container.data('seasonid'),
                             series_number: container.find("span[data-series-count]").data("series-count")
                         };
-                        ajaxPostSend("{{ app.request.baseUrl }}/{{ app.controller_alias }}/add-video-season-series", sendData, false);
+                        ajaxPostSend("{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/add-video-season-series", sendData, false);
                     }
                 });
 
@@ -925,7 +925,7 @@
                         var sendData = {
                             season_id: container.data('seasonid')
                         };
-                        ajaxPostSend("{{ app.request.baseUrl }}/{{ app.controller_alias }}/delete-video-season", sendData, false, false);
+                        ajaxPostSend("{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/delete-video-season", sendData, false, false);
                     }
                 });
 
@@ -936,7 +936,7 @@
                         var sendData = {
                             series_id: container.data('seriesid')
                         };
-                        ajaxPostSend("{{ app.request.baseUrl }}/{{ app.controller_alias }}/delete-video-season-series", sendData, false, false);
+                        ajaxPostSend("{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/delete-video-season-series", sendData, false, false);
                     }
                 });
 
@@ -972,7 +972,7 @@
                         }
                     }
 
-                    ajaxPostSend("{{ app.request.baseUrl }}/{{ app.controller_alias }}/add-video-season", sendData, false);
+                    ajaxPostSend("{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/add-video-season", sendData, false);
                 });
 
                 $("#season_button_container").on('click', '#add_season_structure', function (e) {
@@ -1139,7 +1139,7 @@
                             });
                         }
                     } else if($("#form_id").val()){
-                        ajaxPostSend('{{ app.request.baseUrl }}/{{ app.controller_alias }}/delete-cover', {id: $("#" + container).data('id'), container: container}, false);
+                        ajaxPostSend('{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/delete-cover', {id: $("#" + container).data('id'), container: container}, false);
                     }
                     $('#' + container).removeAttr('qq-file-id');
                     $(this).hide(50, function(){
@@ -1197,7 +1197,7 @@
                         return;
                     }
 
-                    ajaxPostSend('{{ app.request.baseUrl }}/{{ app.controller_alias }}/check-name', {name: _this.val(), year: $.trim($('#form_year').val()), 'id<>': $("#form_id").val()}, false, false);
+                    ajaxPostSend('{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/check-name', {name: _this.val(), year: $.trim($('#form_year').val()), 'id<>': $("#form_id").val()}, false, false);
 
                 });
 
@@ -1220,7 +1220,7 @@
 
                 $(document).on('click', '#update_rating_kinopoisk', function () {
                     $.ajax({
-                        url: '{{ app.request.baseUrl }}/{{ app.controller_alias }}/update-rating-kinopoisk',
+                        url: '{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/update-rating-kinopoisk',
                         type: 'POST',
                         data: {data: $("#form_o_name").val() || $("#form_name").val()},
                         success: function (data) {
@@ -1287,7 +1287,7 @@
                         searchBy = ($('#form_kinopoisk_id').val() ? 'id' : 'name');
                     }
 
-                    ajaxPostSend('{{ app.request.baseUrl }}/{{ app.controller_alias }}/get-kinopoisk-info-by-' + searchBy, sendData, false, false);
+                    ajaxPostSend('{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/get-kinopoisk-info-by-' + searchBy, sendData, false, false);
 
                 });
 
@@ -1442,9 +1442,9 @@
             $("#add_season_structure").hide();
             $("#add_season").hide();
             if ($("#form_is_series").val() == 1) {
-                ajaxPostSend("{{ app.request.baseUrl }}/{{ app.controller_alias }}/get-video-season-list-json", $("#files_container").data(), false);
+                ajaxPostSend("{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/get-video-season-list-json", $("#files_container").data(), false);
             } else {
-                ajaxPostSend("{{ app.request.baseUrl }}/{{ app.controller_alias }}/get-video-files-list-json", $("#files_container").data(), false);
+                ajaxPostSend("{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/get-video-files-list-json", $("#files_container").data(), false);
             }
         }
 
@@ -1463,7 +1463,7 @@
 
         function fillFormData(data){
             if (data.result.hasOwnProperty('cover_big')) {
-                $('#cover_container').next('img').prop('src', "{{ app.request.baseUrl }}/{{ app.controller_alias }}/get-image?url=" + data.result['cover_big'] + '&v='+ $.random(1000000));
+                $('#cover_container').next('img').prop('src', "{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/get-image?url=" + data.result['cover_big'] + '&v='+ $.random(1000000));
             } else {
                 $('#cover_container').next('img').prop('src', '');
             }
@@ -1739,20 +1739,20 @@
                                                         </a>\n\
                                                         <ul class='dropdown-menu pull-right'>\n\
                                                             <li>\n\
-                                                                <a class='main_ajax no_context_menu' href='{{ app.request.baseUrl }}/{{ app.controller_alias }}/get-one-video-file-json' data-id='" + id + "' data-video_id='" + video_id + "' data-season_id='" + season_id + "' data-series_id='" + series_id + "' data-season_number='" + season_number + "' data-series_number='" + series_number + "' data-file_name='" + file_name + "'>\n\
+                                                                <a class='main_ajax no_context_menu' href='{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/get-one-video-file-json' data-id='" + id + "' data-video_id='" + video_id + "' data-season_id='" + season_id + "' data-series_id='" + series_id + "' data-season_number='" + season_number + "' data-series_number='" + series_number + "' data-file_name='" + file_name + "'>\n\
                                                                     <span>{{ 'Edit'|trans }}</span>\n\
                                                                 </a>\n\
                                                             </li>";
                             if (id != 0 ) {
                                 json.data[i].operations += "<li>\n\
-                                                                <a class='main_ajax no_context_menu' " + (id == 0 ? "disabled='disabled'" : '') + " href='{{ app.request.baseUrl }}/{{ app.controller_alias }}/toggle-video-accessed' data-accessed='" + (accessed != 0 ? 0 : 1) + "' data-id='" + id + "' data-video_id='" + video_id + "'  data-season_id='" + season_id + "' data-series_id='" + series_id + "'>\n\
+                                                                <a class='main_ajax no_context_menu' " + (id == 0 ? "disabled='disabled'" : '') + " href='{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/toggle-video-accessed' data-accessed='" + (accessed != 0 ? 0 : 1) + "' data-id='" + id + "' data-video_id='" + video_id + "'  data-season_id='" + season_id + "' data-series_id='" + series_id + "'>\n\
                                                                     <span>" + ( accessed == "1" ? "{{ 'Unpublish'|trans }}" : "{{ 'Publish'|trans }}") + "</span>\n\
                                                                 </a>\n\
                                                             </li>";
                             }
                             if (id != 0 ) {
                                 json.data[i].operations += "<li>\n\
-                                                                <a class='main_ajax no_context_menu' " + (id == 0 ? "disabled='disabled'" : '') + " href='{{ app.request.baseUrl }}/{{ app.controller_alias }}/remove-video-data' data-id='" + id + "' data-video_id='" + video_id + "' data-season_id='" + season_id + "' data-series_id='" + series_id + "'>\n\
+                                                                <a class='main_ajax no_context_menu' " + (id == 0 ? "disabled='disabled'" : '') + " href='{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/remove-video-data' data-id='" + id + "' data-video_id='" + video_id + "' data-season_id='" + season_id + "' data-series_id='" + series_id + "'>\n\
                                                                     <span>{{ 'Remove'|trans }}</span>\n\
                                                                 </a>\n\
                                                             </li>";
@@ -1779,7 +1779,7 @@
                     "processing": false,
                     "serverSide": false,
                     "ajax": {
-                        "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/get-video-files-list-json",
+                        "url": "{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/get-video-files-list-json",
                         "data": function (d) {
                             if ($("#files_container").data('video_id')) {
                                 d['video_id'] = $("#files_container").data('video_id');
@@ -1973,7 +1973,7 @@
                     cleanMediaInfo();
                 }
 
-                ajaxPostSend("{{ app.request.baseUrl }}/{{ app.controller_alias }}/get-media-info-json", sendData, false, false, true);
+                ajaxPostSend("{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/get-media-info-json", sendData, false, false, true);
             } else {
                 checkProtocol();
                 checkFileType();
@@ -2164,7 +2164,7 @@
 
     <script type="text/template" id="modal_save_form_body">
         <div class="box-content no-padding">
-            <form id="file_form" class="form-horizontal" role="form" action="{{ app.request.baseUrl }}/{{ app.controller_alias }}/save-video-files">
+            <form id="file_form" class="form-horizontal" role="form" action="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/save-video-files">
                     <div class="col-sm-8 col-sm-offset-2" id="file_form_input_container">
                         <div class="form-group">
                             <label class="col-sm-3 control-label">{{ 'File type'|trans }}</label>
@@ -2298,7 +2298,7 @@
     </script>
 
     <script type="text/template" id="season_counter_template">
-        <form id="season_counter_form" class="form-horizontal" role="form" action="{{ app.request.baseUrl }}/{{ app.controller_alias }}/add-video-season">
+        <form id="season_counter_form" class="form-horizontal" role="form" action="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/add-video-season">
             <input type="hidden" class="own_fields form-control" name="video_id" id="video_id" value="{% if attribute(app, 'video_id') is defined %}{{ app['video_id'] }}{% endif %}" readonly="readonly">
             <div class="form-group">
                 <label class="col-sm-2 control-label col-sm-offset-2 ">{{ 'Seasons'|trans }}</label>

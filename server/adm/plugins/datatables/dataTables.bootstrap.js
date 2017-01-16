@@ -39,18 +39,35 @@ $.extend(true, $.fn.dataTable.defaults, {
             $(paginateRow).css("display", "none");
         }
         if (oSettings.fnRecordsDisplay() && oSettings.aoData && oSettings.aoData.length) {
-            var curOption = {
-                tableHeight: oSettings.oInstance.height(),
-                ddMenuMaxHeight: 0,
-                ddMenuHeight: 0,
-                trParentOffset: 0
-            };
+            var tableHeight = oSettings.oInstance.height();
+            var ddMenuMaxHeight = 0, ddMenuHeight = 0, trParentOffset = 0, ddMenuItem;
             $(oSettings.nTable).children("tbody").find('tr').each(function(){
-                return checkMenuItemPosition(this, curOption);
+                ddMenuItem = $(this).find('td:last-of-type').find(".dropdown-menu");
+                if (!ddMenuItem.length) {
+                    console.log("ddMenu not found");
+                    return false;
+                }
+                ddMenuItem.closest('dropup').removeClass('dropup');
+                trParentOffset = $(this).position();
+                trParentOffset = trParentOffset.top;
+                ddMenuHeight = ddMenuItem.height() + 10;
+
+                if (ddMenuHeight > ddMenuMaxHeight){
+                    ddMenuMaxHeight = ddMenuHeight ;
+                }
+
+                if (ddMenuHeight > tableHeight) {
+                    return true;
+                }
+
+                if ((trParentOffset > ddMenuHeight) && (trParentOffset + ddMenuHeight - 30) > tableHeight ) {
+                    ddMenuItem.closest('div').addClass('dropup');
+                }
+
             });
 
-            if (((curOption.tableHeight - curOption.trParentOffset) - curOption.ddMenuMaxHeight) < 30) {
-                $(oSettings.nTableWrapper).css('minHeight', curOption.ddMenuMaxHeight + curOption.tableHeight + 30);
+            if (((tableHeight - trParentOffset) - ddMenuMaxHeight) < 30) {
+                $(oSettings.nTableWrapper).css('minHeight', ddMenuMaxHeight + tableHeight + 30);
             }
         }
         var oSearch = oSettings.oSearch? oSettings.oSearch: oSettings.oPreviousSearch;
@@ -235,13 +252,7 @@ $.fn.dataTableExt.oApi.fnUpdateCurrentRow = function ( oSettings, row, data ){
         newData.rerendered = true;
         oSettings.oInstance.dataTable().fnUpdate(newData, row, null, false, false);
     }
-    var curOption = {
-        tableHeight: oSettings.oInstance.height(),
-        ddMenuMaxHeight: 0,
-        ddMenuHeight: 0,
-        trParentOffset: 0
-    };
-    checkMenuItemPosition(row, curOption);
+
 };
 
 $.fn.dataTableExt.oApi.fnRemoveCurrentRow = function ( oSettings, row ){
@@ -257,15 +268,7 @@ $.fn.dataTableExt.oApi.fnRemoveCurrentRow = function ( oSettings, row ){
             oSettings.oInstance.DataTable().page(oSettings._iDisplayStart >= oSettings._iDisplayLength ? 'previous': 'next').draw(false);
         } else {
             oSettings.oInstance.DataTable().ajax.reload();
-            return;
         }
-        var curOption = {
-            tableHeight: oSettings.oInstance.height(),
-            ddMenuMaxHeight: 0,
-            ddMenuHeight: 0,
-            trParentOffset: 0
-        };
-        checkMenuItemPosition(oSettings.oInstance.DataTable().row( oSettings.oInstance.DataTable().rows().length ), curOption);
     }
 };
 
@@ -441,69 +444,3 @@ if ( $.fn.DataTable.TableTools ) {
 	} );
 }
 
-<<<<<<< HEAD
-=======
-function dataTableDataPrepare(data) {
-    if (!data || !data.columns) {
-        return data;
-    }
-    var visibleFields = {};
-    var dataFields = data.columns.map(function(el){ return el.data;});
-    $("table.dataTable").each(function(){
-        var tmpF = {length: 0};
-        var aoColumns = $(this).dataTable().fnSettings().aoColumns;
-        $.each(aoColumns, function(){
-            if (dataFields.indexOf(this.data) === -1) {
-                tmpF.length = 0;
-                return true;
-            }
-            tmpF[this.data] = this.bVisible;
-            tmpF.length++;
-        });
-        if (tmpF.length != 0) {
-            delete tmpF.length;
-            visibleFields = tmpF;
-            return false;
-        }
-    });
-    $.each(data.columns, function(){
-        if (visibleFields.hasOwnProperty(this.data)) {
-            this.visible = visibleFields[this.data];
-        }
-    });
-    var params = $.parseParams(window.location.href.split('?')[1] || ''); //window.location.href.split('?')[1] || ''
-    for (var i in params) {
-        data[i] = params[i];
-    }
-    return data;
-}
-
-function checkMenuItemPosition(tRow, curOption){
-
-    var ddMenuItem = $(tRow).find('td:last-of-type').find(".dropdown-menu");
-    if (!ddMenuItem.length) {
-        console.log("ddMenu not found");
-        return false;
-    }
-    ddMenuItem.closest('dropup').removeClass('dropup');
-    var trParentOffset = $(tRow).position();
-    trParentOffset = trParentOffset.top;
-    curOption.ddMenuHeight = ddMenuItem.height() + 10;
-
-    if (curOption.ddMenuHeight > curOption.ddMenuMaxHeight){
-        curOption.ddMenuMaxHeight = curOption.ddMenuHeight ;
-    }
-
-    if (!curOption.tableHeight) {
-        curOption.tableHeight = $(tRow).closest('table').height();
-    }
-
-    if (curOption.ddMenuHeight > curOption.tableHeight) {
-        return true;
-    }
-
-    if ((trParentOffset > curOption.ddMenuHeight) && (trParentOffset + curOption.ddMenuHeight - 30) > curOption.tableHeight ) {
-        ddMenuItem.closest('div').addClass('dropup');
-    }
-}
->>>>>>> 1c8c40b4552858d9b94480fc030c43c33c25a63e

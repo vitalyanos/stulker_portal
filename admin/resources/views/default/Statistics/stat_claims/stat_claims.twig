@@ -1,6 +1,19 @@
-{% extends (app['twig_theme'] ~ '/' ~ 'layout.twig') | trans %}
-{% import (app['twig_theme'] ~ '/macro/iptw_macro.twig') | trans  as main_macro %}
-{% set title = ('Statistics'|trans ~ ': ' ~ 'Complaints statistics'|trans) | trans %}
+{% extends app['twig_theme'] ~ '/' ~ 'layout.twig' %}
+{% import  app['twig_theme'] ~ '/macro/iptw_macro.twig' as main_macro %}
+
+{% set title = ('Statistics'|trans ~ ': ' ~ 'Complaints statistics'|trans) %}
+
+
+{% block footer %}
+    {{ parent() }}
+
+    <script type="text/javascript" defer>
+       
+        {% include (app.twig_theme ~ "/Statistics/stat_claims/stat_claims.js") %}
+
+    </script>
+{% endblock %}
+
 
 {% block content %}
     <div id="iptv_list">
@@ -13,23 +26,23 @@
                     </a>
                     <ul class="dropdown-menu" style="">
                         <li>
-                            <a class="main_ajax btn btn-success no_context_menu" data-media_type="vclub" href="{{app.request.baseUrl}}/{{app.controller_alias}}/stat-claims-clean">{{ 'Video club'|trans }}</a>
+                            <a class="main_ajax btn btn-success no_context_menu" data-media_type="vclub" href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/stat-claims-clean">{{ 'Video club'|trans }}</a>
                         </li>
                         <li>
-                            <a class="main_ajax btn btn-success no_context_menu" data-media_type="itv" href="{{app.request.baseUrl}}/{{app.controller_alias}}/stat-claims-clean">{{ 'TV'|trans }}</a>
+                            <a class="main_ajax btn btn-success no_context_menu" data-media_type="itv" href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/stat-claims-clean">{{ 'TV'|trans }}</a>
                         </li>
                         <li>
-                            <a class="main_ajax btn btn-success no_context_menu" data-media_type="karaoke" href="{{app.request.baseUrl}}/{{app.controller_alias}}/stat-claims-clean">{{ 'Karaoke'|trans }}</a>
+                            <a class="main_ajax btn btn-success no_context_menu" data-media_type="karaoke" href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/stat-claims-clean">{{ 'Karaoke'|trans }}</a>
                         </li>
                         <li>
-                            <a class="main_ajax btn btn-success no_context_menu" data-media_type="epg" href="{{app.request.baseUrl}}/{{app.controller_alias}}/stat-claims-clean">{{ 'EPG'|trans }}</a>
+                            <a class="main_ajax btn btn-success no_context_menu" data-media_type="epg" href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/stat-claims-clean">{{ 'EPG'|trans }}</a>
                         </li>
                         <li>
-                            <a class="main_ajax btn btn-success no_context_menu" data-media_type="all" href="{{app.request.baseUrl}}/{{app.controller_alias}}/stat-claims-clean">{{ 'All'|trans }}</a>
+                            <a class="main_ajax btn btn-success no_context_menu" data-media_type="all" href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/stat-claims-clean">{{ 'All'|trans }}</a>
                         </li>
                     </ul>
                 </div>
-                <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/stat-claims-logs" class="btn btn-default pull-right" id="add_audio_years">{{ 'Complaints log'|trans }}</a>
+                <a href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/stat-claims-logs" class="btn btn-default pull-right" id="add_audio_years">{{ 'Complaints log'|trans }}</a>
                 {{ main_macro.get_datepicker_double_input() }}
             </div>
         </div>
@@ -42,7 +55,6 @@
                     {% endif %}
                     <div class="box-content">
                         <div class="box-content no-padding">
-                            <div class="dataTables_processing"></div>
                             <table class="table  table-hover table-datatable" id="datatable-1">
                                 {% if attribute(app, 'dropdownAttribute') is defined %}
                                     {{ main_macro.get_datatable_head(app['dropdownAttribute']) }}
@@ -58,65 +70,4 @@
         </div>
     </div>
 
-    <script type="text/javascript" defer>
-
-        function TestTable1() {
-            $('#datatable-1').on('xhr.dt', function (e, settings, json) {
-                if (typeof (json.data) == 'object') {
-                    for (var i in json.data) {
-                        var row = json.data[i];
-                        for (var key in row) {
-                            if (key != 'date') {
-                                var val = row[key];
-                                json.data[i][key] = '<a href="{{app.request.baseUrl}}/{{app.controller_alias}}/stat-claims-logs?date=' + row.date + '&type=' + key + '">'+ val +'</a>';
-                            }
-                        }    
-                    }
-                }
-            }).dataTable({
-                "processing": true,
-                "serverSide": true,
-                "ajax": {
-                    "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/stat-claims-list-json",
-                    "data": function (d) {
-                        d = dataTableDataPrepare(d);
-
-                        $('input[id^="datepicker_"]').each(function () {
-                            d['filters[' + $(this).attr("id").replace("datepicker_", "interval_") + ']'] = $(this).val();
-                        });
-                    }
-                },
-                "language": {
-                    "url": "{{ app.datatable_lang_file }}"
-                },
-                {% if attribute(app, 'dropdownAttribute') is defined %}
-                {{ main_macro.get_datatable_column(app['dropdownAttribute']) }}
-                {% endif %}
-                "bFilter": true,
-                "bPaginate": true,
-				"columnDefs": [     ], 
-                "bInfo": true
-            }).prev('.dataTables_processing').hide('');
-        }
-
-        function yelp() {
-            $(document).ready(function () {
-                {{ main_macro.get_datepicker_js_script() }}
-
-                $(document).on("click", "a.main_ajax", function(e){
-                    e.stopPropagation();
-                    e.preventDefault();
-                    ajaxPostSend($(this).prop("href"), $(this).data());
-                    $(this).closest(".open").removeClass("open");
-                    return false;
-                });
-                window.stateSaveReject = true;
-                LoadDataTablesScripts(TestTable1);
-
-            });
-        }
-
-        document.addEventListener("DOMContentLoaded", yelp, false);
-        
-    </script>
 {% endblock %}

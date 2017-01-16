@@ -6,7 +6,7 @@
     <div id="iptv_list">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <a href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/add-video-moderators" class="btn btn-success pull-right">{{ 'Add moderator'|trans }}</a>
+                <a href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/add-video-moderators" class="btn btn-success pull-right">{{ 'Add moderator'|trans }}</a>
             </div>
         </div>
         <div class="row">
@@ -62,17 +62,17 @@
                                                         </a>\n\
                                                         <ul class="dropdown-menu pull-right">\n\
                                                             <li>\n\
-                                                                <a href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/edit-video-moderators?id='+id+'">\n\
+                                                                <a href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/edit-video-moderators?id='+id+'">\n\
                                                                     <span>{{ 'Edit'|trans }}</span>\n\
                                                                 </a>\n\
                                                             </li>\n\
                                                             <li>\n\
-                                                                <a class="main_ajax no_context_menu" href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/toggle-video-moderators-status" data-modstatus="'+(status ? 0: 1)+'" data-modid="'+id+'">\n\
+                                                                <a class="main_ajax no_context_menu" href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/toggle-video-moderators-status" data-modstatus="'+(status ? 0: 1)+'" data-modid="'+id+'">\n\
                                                                     <span>'+ (status ? "{{ 'Switch off'|trans }}":"{{ 'Switch on'|trans }}") +'</span>\n\
                                                                 </a>\n\
                                                             </li>\n\
                                                             <li>\n\
-                                                                <a class="main_ajax no_context_menu" href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/remove-video-moderators" data-modid="'+id+'">\n\
+                                                                <a class="main_ajax no_context_menu" href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/remove-video-moderators" data-modid="'+id+'">\n\
                                                                     <span>{{ 'Delete'|trans }}</span>\n\
                                                                 </a>\n\
                                                             </li>\n\
@@ -85,7 +85,7 @@
             "processing": true,
             "serverSide": true,
             "ajax": {
-                "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/video-moderators-addresses-list-json"
+                "url": "{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/video-moderators-addresses-list-json"
             },
             "language": {
                 "url": "{{ app.datatable_lang_file }}"

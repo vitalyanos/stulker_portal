@@ -1,6 +1,19 @@
-{% extends (app['twig_theme'] ~ '/' ~ 'layout.twig') | trans %}
-{% import (app['twig_theme'] ~ '/macro/iptw_macro.twig') | trans  as main_macro %}
-{% set title = ('Statistics'|trans ~ ': ' ~ 'TV archive statistics'|trans) | trans %}
+{% extends app['twig_theme'] ~ '/' ~ 'layout.twig' %}
+{% import  app['twig_theme'] ~ '/macro/iptw_macro.twig' as main_macro %}
+
+{% set title = ('Statistics'|trans ~ ': ' ~ 'TV archive statistics'|trans) %}
+
+
+{% block footer %}
+    {{ parent() }}
+
+    <script type="text/javascript" defer>
+       
+        {% include (app.twig_theme ~ "/Statistics/stat_tv_archive/stat_tv_archive.js") %}
+
+    </script>
+{% endblock %}
+
 
 {% block content %}
     <div id="iptv_list">
@@ -19,7 +32,6 @@
                     <div class="box-content no-padding">
                         <div class=" ">
                             <div class=" ">
-                                <div class="dataTables_processing"></div>
                                 <table class="table  table-hover table-datatable" id="datatable-1">
                                     {% if attribute(app, 'dropdownAttribute') is defined %}
                                         {{ main_macro.get_datatable_head(app['dropdownAttribute']) }}
@@ -36,54 +48,4 @@
         </div>
     </div>
 
-    <script type="text/javascript" defer>
-
-        function TestTable1() {
-            $('#datatable-1').on('xhr.dt', function (e, settings, json) {
-                if (typeof (json.data) == 'object') {
-                    for (var i in json.data) {
-                        var row = json.data[i];
-                        for (var key in row) {
-                            if (key == 'name') {
-                                var val = row[key];
-                                json.data[i][key] = '<a href="{{app.request.baseUrl}}/tv-channels/edit-channel?id=' + row.ch_id + '">'+ val +'</a>';
-                            }
-                        }    
-                    }
-                }
-            }).dataTable({
-                "processing": true,
-                "serverSide": true,
-                "ajax": {
-                    "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/stat-tv-archive-list-json",
-                    "data": function (d) {
-                        d = dataTableDataPrepare(d);
-                        $('input[id^="datepicker_"]').each(function () {
-                            d['filters[' + $(this).attr("id").replace("datepicker_", "interval_") + ']'] = $(this).val();
-                        });
-                    }
-                },
-                "language": {
-                    "url": "{{ app.datatable_lang_file }}"
-                },
-                {% if attribute(app, 'dropdownAttribute') is defined %}
-                {{ main_macro.get_datatable_column(app['dropdownAttribute']) }}
-                {% endif %}
-                "bFilter": true,
-                "bPaginate": true,
-                "bInfo": true,
-				"columnDefs": [ {"searchable": false, "targets": [2, 3]} ]
-            }).prev('.dataTables_processing').hide('');
-        }
-
-        function yelp() {
-            $(document).ready(function () {
-                {{ main_macro.get_datepicker_js_script() }}
-                LoadDataTablesScripts(TestTable1);
-            });
-        }
-
-        document.addEventListener("DOMContentLoaded", yelp, false);
-        
-    </script>
 {% endblock %}

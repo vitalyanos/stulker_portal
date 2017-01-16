@@ -303,7 +303,7 @@
         onSuccess: function () {
             var formData = $("#modalbox_ad form").serialize();
             formData['no_table_operations'] = no_table_operations;
-            ajaxPostSend("{{app.request.baseUrl}}/events/add-event", formData);
+            ajaxPostSend("{{app.request_context.baseUrl}}/events/add-event", formData);
             $("#modalbox_ad form").get(0).reset();
             return false;
         },
@@ -314,7 +314,7 @@
 
     function initFileUploader(){
         $('#fileupload').fileupload({
-            url: '{{ app.request.baseUrl }}/{{ app.controller_alias }}/upload-list-addresses',
+            url: '{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/upload-list-addresses',
             type: 'POST',
             autoUpload: true,
             multipart: true,

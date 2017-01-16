@@ -1,12 +1,27 @@
-{% extends (app['twig_theme'] ~ '/' ~ 'layout.twig') | trans %}
-{% import (app['twig_theme'] ~ '/macro/iptw_macro.twig') | trans  as main_macro %}
-{% set title = ('Users'|trans ~ ': ' ~ (app.userEdit ? ('Edit user'|trans ~ " '"~ app.userName ~ "'"): 'Add user'|trans)) | trans %}
+{% extends app['twig_theme'] ~ '/' ~ 'layout.twig' %}
+{% import  app['twig_theme'] ~ '/macro/iptw_macro.twig' as main_macro %}
+
+{% set title = 'Users'|trans ~ ': ' ~ (app.userEdit ? ('Edit user'|trans ~ " '"~ app.userName ~ "'"): 'Add user'|trans) %}
 {% set active_alias = 'users-list' %}
 
+
+{% block footer %}
+    {{ parent() }}
+    
+    <script type="text/javascript" defer>
+        
+        {% include (app.twig_theme ~ "/Users/add_users/add_users.js") %}
+
+    </script>
+{% endblock %}
+
+
 {% block content %}
+    
     {% if app.resellerUserLimit %}
+        
         <div id="add_channel">
-            {{ form_start(app['form'], {'method': 'POST', 'action': (app.request.baseUrl ~ '/' ~ app.controller_alias  ~ '/' ~ app.action_alias) | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
+            {{ form_start(app['form'], {'method': 'POST', 'action': (app.request_context.baseUrl ~ '/' ~ app.controller_alias  ~ '/' ~ app.action_alias) | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
             <div class="bg-danger">
                 <div class="bg-danger">
                     {{ form_errors(app['form']) }}
@@ -222,7 +237,7 @@
                                         {% endif %}
                                     </div>
                                 {% if app.userEdit %}
-                                    <a class="btn btn-default" id="tv_subscription"  href="{{app.request.baseUrl}}/{{app.controller_alias}}/get-subscribed-tv" data-user_id="{{ app['form'].id.vars.value }}">{{ 'User subscription on tv-channels'|trans }}{# ({{ app.channelsCost }})#}</a>
+                                    <a class="btn btn-default" id="tv_subscription"  href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/get-subscribed-tv" data-user_id="{{ app['form'].id.vars.value }}">{{ 'User subscription on tv-channels'|trans }}{# ({{ app.channelsCost }})#}</a>
                                 {% endif %}
                                 </div>
                             </div>
@@ -288,7 +303,7 @@
                                         {{ form_widget(app['form'].parent_password, {'attr': {'class': 'form-control'}}) }}
                                     </div>
                                     <div class=" col-xs-10 col-sm-6">
-                                        <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/reset-users-parent-password" data-userid = "{{ app.userID }}" class="btn btn-info pull-left main_ajax">{{ 'Reset'|trans }}</a>
+                                        <a href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/reset-users-parent-password" data-userid = "{{ app.userID }}" class="btn btn-info pull-left main_ajax">{{ 'Reset'|trans }}</a>
                                     </div>
                                 </div>
                             </div>
@@ -299,7 +314,7 @@
                                         {{ form_widget(app['form'].settings_password, {'attr': {'class': 'form-control'}}) }}
                                     </div>
                                     <div class=" col-xs-10 col-sm-6">
-                                        <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/reset-users-settings-password" data-userid = "{{ app.userID }}" class="btn btn-info pull-left main_ajax">{{ 'Reset'|trans }}</a>
+                                        <a href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/reset-users-settings-password" data-userid = "{{ app.userID }}" class="btn btn-info pull-left main_ajax">{{ 'Reset'|trans }}</a>
                                     </div>
                                 </div>
                             </div>
@@ -310,7 +325,7 @@
                                         {{ form_widget(app['form'].fav_itv, {'attr': {'class': 'form-control'}}) }}
                                     </div>
                                     <div class=" col-xs-10 col-sm-6">
-                                        <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/reset-user-fav-tv" class="btn btn-info pull-left main_ajax" data-userid = "{{ app.userID }}">{{ 'Reset'|trans }}</a>
+                                        <a href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/reset-user-fav-tv" class="btn btn-info pull-left main_ajax" data-userid = "{{ app.userID }}">{{ 'Reset'|trans }}</a>
                                     </div>
                                 </div>
                             </div>
@@ -352,10 +367,10 @@
                                             {{ form_errors(app['form']['tariff_plan_id']) }}
                                         </div>
                                     </div>
-                                    <a class="btn btn-default pull-right" href="{{app.request.baseUrl}}/tariffs/subscribe-log?user_id={{ app['form'].id.vars.value }}">{{ 'Subscribe log'|trans }}</a>
+                                    <a class="btn btn-default pull-right" href="{{app.request_context.baseUrl}}/tariffs/subscribe-log?user_id={{ app['form'].id.vars.value }}">{{ 'Subscribe log'|trans }}</a>
                                     {% if app['tariffPlanSubscriptionFlag'] %}
                                         <span class="col-sm-1  pull-right">&nbsp;</span>
-                                        <a class="btn btn-default pull-right" id="tv_subscription"  href="{{app.request.baseUrl}}/{{app.controller_alias}}/get-subscribed-tv" data-user_id="{{ app['form'].id.vars.value }}">{{ 'User subscription on tv-channels'|trans }}{# ({{ app.channelsCost }})#}</a>
+                                        <a class="btn btn-default pull-right" id="tv_subscription"  href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/get-subscribed-tv" data-user_id="{{ app['form'].id.vars.value }}">{{ 'User subscription on tv-channels'|trans }}{# ({{ app.channelsCost }})#}</a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -376,7 +391,7 @@
                                                 {% for item in app['userTPs'] %}
                                                     <tr>
                                                         <td>
-                                                            <label><a href="{{ app.request.baseUrl }}/tariffs/edit-service-package?id={{ item.services_package_id }}" data-placement="bottom" data-toggle="tooltip" data-original-title="{{ item.description }}">{{ item.name }}</a></label>
+                                                            <label><a href="{{ app.request_context.baseUrl }}/tariffs/edit-service-package?id={{ item.services_package_id }}" data-placement="bottom" data-toggle="tooltip" data-original-title="{{ item.description }}">{{ item.name }}</a></label>
                                                         </td>
                                                         <td>
                                                             <label>
@@ -475,7 +490,7 @@
                             <div class="row">
                                 <div class="pull-right">
                                     {{ form_widget(app['form'].save, { 'label': 'Save'|trans , attr: {'class': 'btn btn-success  pull-right'}}) }}
-                                    <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/users-list" class="btn btn-default pull-right">{{ 'Cancel'|trans }}</a>
+                                    <a href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/users-list" class="btn btn-default pull-right">{{ 'Cancel'|trans }}</a>
                                 </div>
                             </div>
                         </div>
@@ -501,7 +516,7 @@
                         </a>
                     </div>
                 </div>
-                <form class="form-horizontal" role="form" action="{{app.request.baseUrl}}/{{app.controller_alias}}/save-subscribed-tv">
+                <form class="form-horizontal" role="form" action="{{app.request_context.baseUrl}}/{{app.controller_alias}}/save-subscribed-tv">
                     <div class="devoops-modal-inner">
                         <div class="box">
                             <div class="box-content" >
@@ -548,215 +563,16 @@
         </div>
         {% endif %}
 
-    <script type="text/javascript" defer>
-
-        var select2Opt = {minimumResultsForSearch: -1, dropdownAutoWidth: false, width: '100%'};
-
-        var conf = {
-            form: '#form_',
-            lang : '{{ app.js_validator_language }}',
-            showHelpOnFocus : true,
-            validateHiddenInputs: true,
-            ignore: ['.ignore'],
-            modules: 'jsconf, date',
-            onSuccess: function () {
-                $(this.form).get(0).submit();
-                return false;
-            },
-            onError: function () {
-                return false;
-            }
-        };
-
-        function DemoSelect2() {
-            $('#form_group_id').select2(select2Opt);
-            $('#form_tariff_plan_id').select2(select2Opt);
-            $('#form_additional_services_on').select2(select2Opt);
-            $('#form_status').select2(select2Opt);
-            $('#form_theme').select2(select2Opt);
-            {% if attribute(app, 'reseller') is defined and not app['reseller'] %}
-            $('#form_reseller_id').select2(select2Opt);
-            {% endif %}
-        }
-
-        function TestTable1() {
-            $('.table-datatable').dataTable({
-                "processing": false,
-                "serverSide": false,
-                "ajax": null,
-                "language": {
-                    "url": "{{ app.datatable_lang_file }}"
-                },
-                {% if attribute(app, 'tracert_attr') is defined %}
-                {{ main_macro.get_datatable_column(app['tracert_attr']) }}
-                {% endif %}
-                "bFilter": false,
-                "bPaginate": false,
-                "bInfo": false,
-                "aoColumnDefs": [
-                    {"searchable": false},
-                    {"orderable": false, "targets": [ 0 ]}
-                ]
-            });
-        }
-
-        function yelp() {
-            $(document).ready(function () {
-
-                $.validate(conf);
-
-                $('[data-toggle="tooltip"]').tooltip();
-                
-                LoadSelect2Script(DemoSelect2);
-                LoadDataTablesScripts(TestTable1);
-
-                {% if attribute(app, 'enableBilling') is defined and app.enableBilling %}
-                $("#form_expire_billing_date").datepicker({
-                            language: 'ru',
-                            dateFormat: 'dd-mm-yy',
-                            firstDay: 1,
-                            minDate: new Date(),
-                            dayNamesMin: [
-                                '{{ 'Sun'|trans }}',
-                                '{{ 'Mon'|trans }}',
-                                '{{ 'Tue'|trans }}',
-                                '{{ 'Wed'|trans }}',
-                                '{{ 'Thu'|trans }}',
-                                '{{ 'Fri'|trans }}',
-                                '{{ 'Sat'|trans }}'
-                            ],
-                            monthNames: [
-                                '{{ 'January'|trans }}',
-                                '{{ 'February'|trans }}',
-                                '{{ 'March'|trans }}',
-                                '{{ 'April'|trans }}',
-                                '{{ 'May'|trans }}',
-                                '{{ 'June'|trans }}',
-                                '{{ 'July'|trans }}',
-                                '{{ 'August'|trans }}',
-                                '{{ 'September'|trans }}',
-                                '{{ 'October'|trans }}',
-                                '{{ 'November'|trans }}',
-                                '{{ 'December'|trans }}'
-                            ]
-                        }
-                );
-                {% endif %}
-
-                $(document).on('blur change input', '#form_login', function (e) {
-                    var _this = $(this);
-                    _this.next('div').removeClass('bg-danger').css('visibility', 'hidden').html('&nbsp;');
-
-                    var sendData = {login: _this.val(), id: $("#form_id").val()};
-
-                    ajaxPostSend('{{app.request.baseUrl}}/{{app.controller_alias}}/check-login', sendData);
-                });
-
-                $(document).on('click', "a.main_ajax", function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    ajaxPostSend($(this).attr('href'), $(this).data(), false, false);
-
-                    return false;
-                });
-
-                $(document).on('change', '#form_tariff_plan_id', function(){
-                    if($(this).val() != $("#tariff_plan_table").data('planid')){
-                        $("#tariff_plan_table").hide();
-                        $("#tariff_plan_change").show();
-                    } else {
-                        $("#tariff_plan_table").show();
-                        $("#tariff_plan_change").hide();
-                    }
-                });
-                
-                $(document).on('click', '#form_save', function(){
-                    if (!$("#tariff_plan_table").is(':visible')) {
-                        $("#tariff_plan_table input").attr('disabled', 'disabled');
-                    }
-
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    if ($(conf.form).isValid({}, conf, true)) {
-                        conf.onSuccess();
-                    } else {
-                        conf.onError();
-                    }
-                    return false;
-                });
-
-                {% if app.userEdit and (not app['tariffPlanFlag'] or app['tariffPlanSubscriptionFlag']) %}
-                $(document).on('click', "#tv_subscription", function (e){
-                    e.stopPropagation();
-                    e.preventDefault();
-                    ajaxPostSend($(this).attr('href'), $(this).data());
-                });
-
-                $("#modalbox_ad").on('click', 'button[type="submit"]', function(e){
-                    e.stopPropagation();
-                    e.preventDefault();
-                    var sendData = {
-                        user_id: $('#form_id').val(),
-                        sub_ch: []
-                    };
-                    $("#subscribed_tv option").each(function(){
-                        sendData.sub_ch.push($(this).val())
-                    });
-                    ajaxPostSend($(this).closest('form').attr('action'), sendData);
-                });
-                {% endif %}
-            });
-        }
-        document.addEventListener("DOMContentLoaded", yelp, false);
-
-        var resetUsersParentPassword = function (obj) {
-            $(obj).closest('.form-group').find('input').val($(obj).data('newpass'));
-            JSSuccessModalBox(obj);
-        };
-
-        var resetUserFavTv = function (obj) {
-            $(obj).closest('.form-group').find('input').val(0);
-            JSSuccessModalBox(obj);
-        };
-        {% if app.userEdit and (not app['tariffPlanFlag'] or app['tariffPlanSubscriptionFlag']) %}
-        var setSubscribedTVModal = function(data){
-            if (data.not_subscribed_tv) {
-                $("#not_subscribed_tv").empty();
-                $.each(data.not_subscribed_tv, function(){
-                    $("#not_subscribed_tv").append('<option value="'+this.id+'">'+this.name+'</option>');
-                });
-            }
-
-            if (data.subscribed_tv) {
-                $("#subscribed_tv").empty();
-                $.each(data.subscribed_tv, function(){
-                    $("#subscribed_tv").append('<option value="'+this.id+'">'+this.name+'</option>');
-                });
-            }
-
-            $("#modalbox_ad").show();
-        };
-
-        var hideSubscribedTVModal = function(data){
-            $("#modalbox_ad").hide();
-            JSSuccessModalBox(data);
-        };
-
-        var hideSubscribedTVModalError = function(data){
-            JSErrorModalBox(data);
-        };
-
-        {% endif %}
-    </script>
     {% else %}
-    <div id="add_channel">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <h2 class="txt-danger">{{ 'Limit of number of the users has been reached'|trans }}</h2>
+        
+        <div id="add_channel">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <h2 class="txt-danger">{{ 'Limit of number of the users has been reached'|trans }}</h2>
+                </div>
             </div>
         </div>
-    </div>
+
     {% endif %}
+
 {% endblock %}

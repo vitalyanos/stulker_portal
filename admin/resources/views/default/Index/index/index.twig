@@ -220,7 +220,7 @@
             $.ajax({
                 dataType: 'json',
                 type: 'post',
-                url: '{{ app.request.baseUrl }}/index/index-datatable4-list-json',
+                url: '{{ app.request_context.baseUrl }}/index/index-datatable4-list-json',
                 async: false,
                 success: function(data){
                     if(data && data.data){
@@ -254,7 +254,7 @@
                 /*console.log(json);*/
             }).dataTable({
                 "ajax": {
-                    "url": "{{ app.request.baseUrl }}/index/{{ item.json_action_alias }}",
+                    "url": "{{ app.request_context.baseUrl }}/index/{{ item.json_action_alias }}",
                     "data": function (d) {}
                 },
                 "deferLoading": {{ item.data|length }},
@@ -283,7 +283,7 @@
             $.ajax({
                 dataType: 'json',
                 type: 'post',
-                url: '{{ app.request.baseUrl }}/index/index-datatable5-list-json',
+                url: '{{ app.request_context.baseUrl }}/index/index-datatable5-list-json',
                 async: false,
                 success: function(data){
                     if(data && data.data){

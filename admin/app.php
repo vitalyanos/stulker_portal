@@ -1,7 +1,6 @@
 <?php
 
 use Symfony\Component\Translation\Loader\PoFileLoader;
-use Neutron\Silex\Provider\ImagineServiceProvider;
 
 require_once __DIR__ . '/vendor/autoload.php';
 define('PROJECT_PATH', realpath(dirname(__FILE__) . '/../server/'));
@@ -80,11 +79,13 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 $app->register(new Silex\Provider\FormServiceProvider());
 $app->register(new \nymo\Silex\Provider\BreadCrumbServiceProvider());
-$app->register(new Silex\Provider\UrlGeneratorServiceProvider());
+$app->register(new Silex\Provider\RoutingServiceProvider());
+$app->register(new Silex\Provider\LocaleServiceProvider());
 $app->register(new Silex\Provider\TranslationServiceProvider(), array(
     'locale' => $language,
     'locale_fallbacks' => array($language),
 ));
+
 $app['allowed_locales'] = $allowed_locales;
 
 $app['twig.options.cache'] = __DIR__ . '/resources/cache/twig';
@@ -109,34 +110,49 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => $base_twig_path,
 ));
 
-$app->register(new ImagineServiceProvider());
+$app->register(new \W6\Service\Provider\ImagineServiceProvider());
 
 $app["language"] = $language;
 $app["js_validator_language"] = in_array($language, array('pt', 'ro', 'dk', 'no', 'nl', 'cz', 'ca', 'ru', 'it', 'fr', 'de', 'se', 'en', 'pt')) ? $language: 'en';
 $app['lang']=$lang=array($language);
 $app["locale"] = $locale;
-$app['translator'] = $app->share($app->extend('translator', function($translator, $app){
+
+$app->extend('translator', function($translator, $app){
             $lang = (!empty($app["language"])? $app["language"]: "ru");
             $translator->addLoader('po', new PoFileLoader());
             $translator->addResource('po', __DIR__."/../server/locale/$lang/LC_MESSAGES/stb.po", $lang);
             $translator->setLocale($lang);
             return $translator;
-        }));
+        });
+
 $app["breadcrumbs.separator"] = "";
-$app['twig'] = $app->share( $app->extend( 'twig', function ($twig, $app) {
-        $twig->addExtension(new \nymo\Twig\Extension\BreadCrumbExtension($app));
-        $twig->addExtension(new Twig_Extension_Optimizer());
-        return $twig;
-    })
-);
+$app->extend('twig', function ($twig, $app) {
+    $twig->addExtension(new \nymo\Twig\Extension\BreadCrumbExtension($app));
+    $twig->addExtension(new Twig_Extension_Optimizer());
+    return $twig;
+});
 
-/*$app->register(new Silex\Provider\AssetServiceProvider(), array(
-    'filters' => array(
-        'uglifyjs2' => array(
-            // the path to the uglifyjs executable
-            'bin' => '/usr/local/bin/uglifyjs',
+$auto_dump_assets = (getenv('STALKER_ENV') && !(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' ));
+$app->register(new SilexAssetic\AsseticServiceProvider(),
+    array(
+        'assetic.path_to_web' => __DIR__ . '/../server/adm',
+        'assetic.options' => array(
+            'auto_dump_assets' => $auto_dump_assets,                        // ручное управление минимизацией на лету true - включить, false - отключить
+            'debug' => false
         ),
-    ),
-));*/
-
+        'assetic.filters' => $app->protect(function($fm) {
+            $fm->set('yui_css', new Assetic\Filter\Yui\CssCompressorFilter( // sudo apt-get install yui-compressor
+                '/usr/share/yui-compressor/yui-compressor.jar'
+            ));
+            $fm->set('yui_js', new Assetic\Filter\Yui\JsCompressorFilter(
+                '/usr/share/yui-compressor/yui-compressor.jar'
+            ));
+            $fm->set('uglifyjs2', new \Assetic\Filter\UglifyJs2Filter(
+                '/usr/local/bin/uglifyjs'
+            ));
+            $fm->set('uglifycss', new \Assetic\Filter\UglifyCssFilter(
+                '/usr/local/bin/uglifycss'
+            ));
+        })
+    ));
 return require_once 'controllers.php';

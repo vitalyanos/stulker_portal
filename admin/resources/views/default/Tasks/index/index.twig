@@ -1,4 +1,5 @@
-{% extends (app['twig_theme'] ~ '/' ~ 'layout.twig') | trans %}
+{% extends app['twig_theme'] ~ '/' ~ 'layout.twig' %}
+
 {% set title = 'tasks' %}
 
 {% block content %}

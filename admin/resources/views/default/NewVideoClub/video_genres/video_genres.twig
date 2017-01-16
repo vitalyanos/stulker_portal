@@ -53,12 +53,12 @@
                                                         </a>\n\
                                                         <ul class='dropdown-menu pull-right'>\n\
                                                             <li>\n\
-                                                                <a href='{{ app.request.baseUrl }}/{{ app.controller_alias }}/video-genres-list-json' class='main_ajax no_context_menu' data-id='" + id + "' id='edit_video_genres_" + id + "'>\n\
+                                                                <a href='{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/video-genres-list-json' class='main_ajax no_context_menu' data-id='" + id + "' id='edit_video_genres_" + id + "'>\n\
                                                                     <span>{{ 'Edit'|trans }}</span>\n\
                                                                 </a>\n\
                                                             </li>\n\
                                                             <li>\n\
-                                                                <a class='main_ajax no_context_menu' " + (movie_in_genre ? "disabled='disabled'" : "") + " href='{{ app.request.baseUrl }}/{{ app.controller_alias }}/remove-video-genres' data-genresid='" + id + "'>\n\
+                                                                <a class='main_ajax no_context_menu' " + (movie_in_genre ? "disabled='disabled'" : "") + " href='{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/remove-video-genres' data-genresid='" + id + "'>\n\
                                                                     <span>{{ 'Delete'|trans }}</span>\n\
                                                                 </a>\n\
                                                             </li>\n\
@@ -66,14 +66,14 @@
                                                     </div>";
                         var title = json.data[i].title;
 
-                        json.data[i].title = "<a href='{{ app.request.baseUrl }}/{{ app.controller_alias }}/video-genres-list-json' class='main_ajax no_context_menu' data-id='" + id + "' id='edit_video_genres_" + id + "'>" + title + "</a>";
+                        json.data[i].title = "<a href='{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/video-genres-list-json' class='main_ajax no_context_menu' data-id='" + id + "' id='edit_video_genres_" + id + "'>" + title + "</a>";
                     }
                 }
             }).dataTable({
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/video-genres-list-json"
+                    "url": "{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/video-genres-list-json"
                 },
                 "language": {
                     "url": "{{ app.datatable_lang_file }}"
@@ -211,7 +211,7 @@
             $('#modalbox button[type="submit"]').removeAttr("disabled");
             $('#video_title').next('div').removeClass('bg-danger').css('visibility', 'hidden').html('&nbsp;');
             $('#video_num').next('div').removeClass('bg-danger').css('visibility', 'hidden').html('&nbsp;');
-            $('#modalbox form').attr('action', "{{app.request.baseUrl}}/{{app.controller_alias}}/save-video-genres");
+            $('#modalbox form').attr('action', "{{app.request_context.baseUrl}}/{{app.controller_alias}}/save-video-genres");
             $("#modalbox").show();
         }
     </script>

@@ -1,6 +1,19 @@
-{% extends (app['twig_theme'] ~ '/' ~ 'layout.twig') | trans %}
-{% import (app['twig_theme'] ~ '/macro/iptw_macro.twig') | trans  as main_macro %}
-{% set title = ('Statistics'|trans ~ ': ' ~ 'Subscribers statistic'|trans) | trans %}
+{% extends app['twig_theme'] ~ '/' ~ 'layout.twig' %}
+{% import  app['twig_theme'] ~ '/macro/iptw_macro.twig' as main_macro %}
+
+{% set title = ('Statistics'|trans ~ ': ' ~ 'Subscribers statistic'|trans) %}
+
+
+{% block footer %}
+    {{ parent() }}
+
+    <script type="text/javascript" defer>
+       
+        {% include (app.twig_theme ~ "/Statistics/stat_abonents/stat_abonents.js") %}
+
+    </script>
+{% endblock %}
+
 
 {% block content %}
     <div id="iptv_list">
@@ -36,7 +49,6 @@
                 {% endif %}
                 <div class="box-content">
                     <div class="box-content no-padding">
-                        <div class="dataTables_processing"></div>
                         <table class="table  table-hover table-datatable" id="datatable-1">
                             {% if attribute(app, 'dropdownAttribute') is defined %}
                                 {{ main_macro.get_datatable_head(app['dropdownAttribute']) }}
@@ -51,63 +63,4 @@
         </div>
     </div>
 
-    <script type="text/javascript" defer>
-
-        function TestTable1() {
-            $('#datatable-1').on('xhr.dt', function (e, settings, json) {
-                if (typeof (json.data) == 'object' && json.data.length >0) {
-                    var dateKey = false, key, date;
-                    var possibleDateKeys = ['readed'];
-                    for (var num in possibleDateKeys) {
-                        key = possibleDateKeys[num];
-                        if (typeof(json.data[0][key]) != 'undefined') {
-                            dateKey = key;
-                        }
-                    }
-                    if (dateKey) {
-                        for (var i in json.data) {
-                            date = json.data[i][dateKey];
-                            if (date > 0) {
-                                date = new Date(date * 1000);
-                                json.data[i][dateKey] = date.toLocaleFormat("%b %d, %Y %H:%M");
-                            }
-                        }
-                    }
-                }
-            }).dataTable({
-                "processing": true,
-                "serverSide": true,
-                "ajax": {
-                    "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/stat-abonents-list-json",
-                    "data": function (d) {
-                        d = dataTableDataPrepare(d);
-
-                        $('input[id^="datepicker_"]').each(function () {
-                            d['filters[' + $(this).attr("id").replace("datepicker_", "interval_") + ']'] = $(this).val();
-                        });
-                    }
-                },
-                "language": {
-                    "url": "{{ app.datatable_lang_file }}"
-                },
-                {% if attribute(app, 'dropdownAttribute') is defined %}
-                {{ main_macro.get_datatable_column(app['dropdownAttribute']) }}
-                {% endif %}
-                "bFilter": true,
-                "bPaginate": true,
-				"columnDefs": [{"searchable": false, "targets": [2]}],
-                "bInfo": true
-            }).prev('.dataTables_processing').hide('');
-        }
-
-        function yelp() {
-            $(document).ready(function () {
-                {{ main_macro.get_datepicker_js_script() }}
-                LoadDataTablesScripts(TestTable1);
-            });
-        }
-
-        document.addEventListener("DOMContentLoaded", yelp, false);
-        
-    </script>
 {% endblock %}

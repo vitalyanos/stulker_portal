@@ -1,10 +1,23 @@
-{% extends (app['twig_theme'] ~ '/' ~ 'layout.twig') | trans %}
-{% set title = ('Video club'|trans ~ ': ' ~ (app.modEdit ? ('Edit moderator'|trans ~ " '"~ app.modName ~ "'"): 'Add moderator'|trans)) | trans %}
+{% extends app['twig_theme'] ~ '/' ~ 'layout.twig' %}
+
+{% set title = 'Video club'|trans ~ ': ' ~ (app.modEdit ? ('Edit moderator'|trans ~ " '"~ app.modName ~ "'"): 'Add moderator'|trans) %}
 {% set active_alias = 'video-moderators-addresses' %}
+
+
+{% block footer %}
+    {{ parent() }}
+    
+    <script type="text/javascript" defer>
+       
+        {% include app.twig_theme ~ "/VideoClub/add_video_moderators/add_video_moderators.js" %}
+
+    </script>
+{% endblock %}
+
 
 {% block content %}
     <div id="add_channel">
-        {{ form_start(app['form'], {'method': 'POST', 'action': (app.request.baseUrl ~ '/' ~ app.controller_alias  ~ '/' ~ app.action_alias) | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
+        {{ form_start(app['form'], {'method': 'POST', 'action': (app.request_context.baseUrl ~ '/' ~ app.controller_alias  ~ '/' ~ app.action_alias) | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
         <div class="bg-danger">
             <div class="bg-danger">
                 {{ form_errors(app['form']) }}
@@ -60,92 +73,20 @@
                         <div class="row">
                             <div class="col-xs-10 col-sm-4 pull-right">
                                 {{ form_widget(app['form'].save, { 'label': 'Save'|trans , attr: {'class': 'btn btn-success col-sm-5 pull-right'}}) }}
-                                <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/video-moderators-addresses" class="btn btn-default col-sm-5 pull-left">{{ 'Cancel'|trans }}</a>
+                                <a href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/video-moderators-addresses" class="btn btn-default col-sm-5 pull-left">{{ 'Cancel'|trans }}</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        
         <div style="">
             {{ form_rest(app.form) }}
         </div>
+        
         {{ form_end(app['form']) }}  
+    
     </div>
-    <script type="text/javascript" defer>
 
-        var conf = {
-            form: '#form_',
-            lang : '{{ app.js_validator_language }}',
-            showHelpOnFocus : true,
-            validateHiddenInputs: true,
-            ignore: ['.ignore'],
-            modules: 'jsconf',
-            onSuccess: function () {
-                $(this.form).get(0).submit();
-                return false;
-            },
-            onError: function () {
-                return false;
-            }
-        };
-
-        function yelp() {
-            $(document).ready(function () {
-
-                $.validate(conf);
-
-                $(document).on('change', '#form_mac', function (e) {
-                    var _this = $(this);
-                    _this.next('div').removeClass('bg-danger').css('visibility', 'hidden').html('&nbsp;');
-
-                    if ($.trim(_this.val()) == '') {
-                        return;
-                    } else {
-                        var mac_val = $.trim(_this.val());
-                        var regExp = /([0-9a-fA-F]{2}([:]|$)){6}$/ig;
-                        if (!regExp.test(mac_val)) {
-                            _this.next('div').append('<i class="txt-danger fa fa-ban"></i> ' + "{{ 'Error: Not valid mac address'|trans }}").css('visibility', 'visible');
-                            return;
-                        }
-                    }
-
-                    $.ajax({
-                        url: 'video-club/check-moderator-mac',
-                        type: 'POST',
-                        data: {mac: _this.val(), id: $("#form_id").val()},
-                        success: function (data) {
-                            if (data.success) {
-                                _this.next('div').append('<i class="txt-success fa fa-check"></i> ' + data.chk_rezult).css('visibility', 'visible');
-                            } else {
-                                JSErrorModalBox(data);
-                            }
-                        },
-                        error: function (data) {
-                            if (typeof (data.responseJSON) != 'undefined' && typeof (data.responseJSON.error) != 'undefined') {
-                                _this.next('div').append('<i class="txt-danger fa fa-ban"></i> ' + data.responseJSON.error).css('visibility', 'visible');
-                            } else {
-                                JSErrorModalBox(data.responseJSON);
-                            }
-                        },
-                        dataType: "json",
-                        async: false
-                    });
-                });
-
-                $(document).on("click", "#form_save", function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    if ($(conf.form).isValid({}, conf, true)) {
-                        conf.onSuccess();
-                    } else {
-                        conf.onError();
-                    }
-                    return false;
-                });
-            });
-        }
-        document.addEventListener("DOMContentLoaded", yelp, false);
-    </script>
 {% endblock %}

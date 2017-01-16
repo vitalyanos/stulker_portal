@@ -4,7 +4,7 @@
 
 {% block content %}
     <div id="add_channel">
-        {{ form_start(app['form'], {'method': 'POST', 'action': (app.request.baseUrl ~ '/' ~ app.controller_alias  ~ '/' ~ app.action_alias) | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
+        {{ form_start(app['form'], {'method': 'POST', 'action': (app.request_context.baseUrl ~ '/' ~ app.controller_alias  ~ '/' ~ app.action_alias) | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
         <div class="bg-danger">
             <div class="bg-danger">
                 {{ form_errors(app['form']) }}
@@ -180,7 +180,7 @@
                         <div class="row">
                             <div class="pull-right">
                                 {{ form_widget(app['form'].save, { 'label': 'Save'|trans , attr: {'class': 'btn btn-success  pull-right'}}) }}
-                                <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/service-packages" class="btn btn-default pull-right">{{ 'Cancel'|trans }}</a>
+                                <a href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/service-packages" class="btn btn-default pull-right">{{ 'Cancel'|trans }}</a>
                             </div>
                         </div>
                     </div>
@@ -221,11 +221,11 @@
                 $.validate(conf);
                 $( "#form_price" ).spinner({step: 0.01, numberFormat: "C", min: 0, value: $( "#form_price" ).val()});
                 LoadSelect2Script(DemoSelect2);
-                $('head').append('<link href="{{ app.request.baseUrl }}/plugins/multiselect_transfer/style.css" type="text/css" rel="stylesheet" />');
+                $('head').append('<link href="{{ app.request_context.baseUrl }}/plugins/multiselect_transfer/style.css" type="text/css" rel="stylesheet" />');
 
                 $(document).on('change', '#form_external_id', function (e) {
                     var _this = $(this);
-                    ajaxPostSend('{{app.request.baseUrl}}/{{app.controller_alias}}/check-external-id', {externalid: _this.val(), selfid: $('#form_id').val()}, false);
+                    ajaxPostSend('{{app.request_context.baseUrl}}/{{app.controller_alias}}/check-external-id', {externalid: _this.val(), selfid: $('#form_id').val()}, false);
                 });
 
                 $(document).on('change', '#form_all_services', function(e){
@@ -289,7 +289,7 @@
                     $('#form_services').empty();
 
                     if (type != 0){
-                        ajaxPostSend('{{app.request.baseUrl}}/{{app.controller_alias}}/get-services', {type: type}, false);
+                        ajaxPostSend('{{app.request_context.baseUrl}}/{{app.controller_alias}}/get-services', {type: type}, false);
                     }
                 });
                 

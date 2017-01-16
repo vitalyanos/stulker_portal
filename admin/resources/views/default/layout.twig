@@ -4,37 +4,25 @@
         {% block head %}
             <meta charset="utf-8">
             <title>{{title}}</title>
-<<<<<<< HEAD:admin/resources/views/layout.twig
-            {% set colStyles = [] %}
-            {% concatJS(colStyles) | minimize %}
-            
-            {% include "basic_templates/meta.twig" %}
-            {% include "basic_templates/css.twig" %}
-=======
-            {% include (app['twig_theme'] ~ '/' ~ "basic_templates/meta.twig") | trans %}
-            {% include (app['twig_theme'] ~ '/' ~ "basic_templates/css.twig") | trans %}
->>>>>>> 1c8c40b4552858d9b94480fc030c43c33c25a63e:admin/resources/views/default/layout.twig
+            {% include app['twig_theme'] ~ '/' ~ "basic_templates/meta.twig" %}
+            {% include app['twig_theme'] ~ '/' ~ "basic_templates/css.twig" %}
         {% endblock head %}
     </head>
     <body>
         {% block container %}
-           {% block maincontainer %}
+        {% block maincontainer %}
+                
                 <!--Start Container-->
 				<div id="wrapper">
-				{% block header %}
-<<<<<<< HEAD:admin/resources/views/layout.twig
-                    {% include "basic_templates/header.twig" %}
-				{% endblock header %}
+    				
+                    {% block header %}
+                        {% include app['twig_theme'] ~ '/' ~ "basic_templates/frgHeader/frgHeader.twig" %}
+    				{% endblock header %}
 					
                     {% block sidebar %}
-                            {% include "basic_templates/sidebar.twig" %}
-=======
-                {% include (app['twig_theme'] ~ '/' ~ "basic_templates/header.twig") | trans %}
-				{% endblock header %}
-									{% block sidebar %}
-                            {% include (app['twig_theme'] ~ '/' ~ "basic_templates/sidebar.twig") | trans %}
->>>>>>> 1c8c40b4552858d9b94480fc030c43c33c25a63e:admin/resources/views/default/layout.twig
+                        {% include app['twig_theme'] ~ '/' ~ "basic_templates/frgSidebar/frgSidebar.twig" %}
                     {% endblock sidebar %}
+                    
                     <div id="main" class="container-fluid">
 
                         <div class="row">
@@ -53,7 +41,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        {% block content %}{% endblock %}
+                                        {% block content %}
+                                        {% endblock content %}
                                     </div>
                                 </div>
                             </div>
@@ -61,14 +50,19 @@
 
                         </div>
                     </div>
-				 {% block footer %}
-                {% include (app['twig_theme'] ~ '/' ~ "basic_templates/footer_js.twig") | trans %}
-            {% endblock footer %}
-			
-                <!--End Container--></div>
-            {% endblock maincontainer %}
 
-           
+                    {# need to be before frgFooter, couse jQuery used in frgFooter #}
+                    {% block footer_js %}
+                        {% include app['twig_theme'] ~ '/' ~ "basic_templates/footer_js.twig" %}
+                    {% endblock %}
+                 
+                    {% block footer %}
+                        {% include app['twig_theme'] ~ '/' ~ "basic_templates/frgFooter/frgFooter.twig" %}
+                    {% endblock footer %}
+
+                <!--End Container--></div>
+        
+        {% endblock maincontainer %}
         {% endblock container %}
 			
     </body>

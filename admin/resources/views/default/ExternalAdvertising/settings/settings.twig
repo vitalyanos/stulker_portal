@@ -1,5 +1,18 @@
-{% extends (app['twig_theme'] ~ '/' ~ 'layout.twig') | trans %}
-{% set title = ('Advertising'|trans ~ ': ' ~ 'Settings'|trans) | trans %}
+{% extends app['twig_theme'] ~ '/' ~ 'layout.twig' %}
+
+{% set title = 'Advertising'|trans ~ ': ' ~ 'Settings'|trans %}
+
+
+{% block footer %}
+    {{ parent() }}
+
+    <script type="text/javascript" defer>
+       
+        {% include (app.twig_theme ~ "/ExternalAdvertising/settings/settings.js") %}
+
+    </script>
+{% endblock %}
+
 
 {% block content %}
 
@@ -30,7 +43,7 @@
                 </div>
             </div>
         </div>
-        {{ form_start(app['form'], {'method': 'POST', 'action': (app.request.baseUrl ~ '/' ~ app.controller_alias  ~ '/' ~ app.action_alias) | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
+        {{ form_start(app['form'], {'method': 'POST', 'action': (app.request_context.baseUrl ~ '/' ~ app.controller_alias  ~ '/' ~ app.action_alias) | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
         <div class="bg-danger">
             <div class="bg-danger">
                 {{ form_errors(app['form']) }}
@@ -145,26 +158,5 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" defer>
 
-        function yelp() {
-            $(document).ready(function () {
-                $('#add_new_source').click(function(e) {
-                    e.preventDefault();
-                    e.preventDefault();
-                    var newWidget = $(this).attr('data-prototype');
-                    var itemCount = $('input[id^="form_new_source_"]').length;
-                    var itemContainer = $('input[id^="form_new_source_"]:last').closest('.form-group').clone(true);
-                    newWidget = newWidget.replace(/__name__/g, itemCount);
-                    itemContainer.find('input').replaceWith(newWidget);
-                    itemContainer.find('label').text("{{ 'source'|trans }} # " + ($('input[id^="form_"][type="text"]').length + 1));
-                    itemContainer.insertAfter($(this).closest('.form-group'));
-                    $(this).closest(".add_new_source_container").remove();
-                    return false;
-                });
-            });
-        }
-        document.addEventListener("DOMContentLoaded", yelp, false);
-
-    </script>
 {% endblock %}

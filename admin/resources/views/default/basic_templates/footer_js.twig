@@ -1,302 +1,43 @@
-
 {# empty Twig template #}
 
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <!--<script src="//code.jquery.com/jquery.js"></script>-->
-        {#<script src="{{app.request.baseUrl}}/js/jquery-2.2.4.js"></script>#}
-        <script src="{{app.request.baseUrl}}/plugins/jquery/jquery-2.1.0.min.js"></script>
-		<script src="{{app.request.baseUrl}}/plugins/noty/packaged/jquery.noty.packaged.js"></script>
-        <script src="{{app.request.baseUrl}}/js/jquery.cookies.2.2.0.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/jquery-ui/jquery-ui.js"></script>
-        
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery/jquery-2.1.0.min.js"></script>
+		 <script src="{{app.request_context.baseUrl}}/plugins/noty/packaged/jquery.noty.packaged.js"></script>
+        <script src="{{app.request_context.baseUrl}}/js/jquery.cookies.2.2.0.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery-ui/jquery-ui.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
-        <script src="{{app.request.baseUrl}}/plugins/bootstrap/bootstrap.min.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/bootstrap/bootstrap.min.js"></script>
         <script src="{{app.relativePath}}c/version.js{% if attribute(app, 'current_version') is defined and app['current_version']%}?ver={{ app['current_version'] }}{% endif %}"></script>
-        
         <!-- All functions for this theme + document.ready processing -->
-        <script src="{{app.request.baseUrl}}/plugins/form-validator/jquery.form-validator.min.js"></script>
-        <script src="{{app.request.baseUrl}}/js/devoops.js{% if attribute(app, 'current_version') is defined and app['current_version']%}?ver={{ app['current_version'] }}{% endif %}"></script>
-        <script src="{{app.request.baseUrl}}/plugins/multiselect_transfer/jquery.selso.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/form-validator/jquery.form-validator.min.js"></script>
+        <script src="{{app.request_context.baseUrl}}/js/devoops.js{% if attribute(app, 'current_version') is defined and app['current_version']%}?ver={{ app['current_version'] }}{% endif %}"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/multiselect_transfer/jquery.selso.js"></script>
 
-        <script src="{{app.request.baseUrl}}/plugins/datatables/jquery.dataTables.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/datatables/ZeroClipboard.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/datatables/TableTools.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/datatables/fnReloadAjax.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/datatables/dataTables.bootstrap.js?{#ver={{ random() }}#}{% if 0 and attribute(app, 'current_version') is defined and app['current_version']%}?ver={{ app['current_version'] }}{% endif %}"></script>
-        <script src="{{app.request.baseUrl}}/plugins/datatables/jquery.dataTables.rowReordering.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/datatables/TableTools.js"></script>
-    {#    <script src="{{app.request.baseUrl}}/plugins/datatables/dataTables.colReorder.js"></script>   #}
+        <script src="{{app.request_context.baseUrl}}/plugins/datatables/jquery.dataTables.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/datatables/ZeroClipboard.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/datatables/TableTools.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/datatables/fnReloadAjax.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/datatables/dataTables.bootstrap.js?{#ver={{ random() }}#}{% if 0 and attribute(app, 'current_version') is defined and app['current_version']%}?ver={{ app['current_version'] }}{% endif %}"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/datatables/jquery.dataTables.rowReordering.js"></script>
 
-        <script src="{{app.request.baseUrl}}/plugins/select2/select2.full.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/select2/i18n/{% if app["language"] %}{{ app["language"] }}{% else %}en{% endif %}.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/select2/select2.full.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/select2/i18n/{% if app["language"] %}{{ app["language"] }}{% else %}en{% endif %}.js"></script>
 
-        <script src="{{app.request.baseUrl}}/plugins/jquery-file-upload/js/load-image.all.min.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/jquery-file-upload/js/canvas-to-blob.min.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/jquery-file-upload/js/jquery.blueimp-gallery.min.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/jquery-file-upload/js/jquery.iframe-transport.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/jquery-file-upload/js/jquery.fileupload.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/jquery-file-upload/js/jquery.fileupload-process.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/jquery-file-upload/js/jquery.fileupload-image.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/jquery-file-upload/js/jquery.fileupload-validate.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/jquery-file-upload/js/jquery.fileupload-ui.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/jquery-file-upload/js/jquery.fileupload-jquery-ui.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/jquery-file-upload/js/cors/jquery.xdr-transport.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery-file-upload/js/load-image.all.min.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery-file-upload/js/canvas-to-blob.min.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery-file-upload/js/jquery.blueimp-gallery.min.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery-file-upload/js/jquery.fileupload.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery-file-upload/js/jquery.fileupload-process.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery-file-upload/js/jquery.fileupload-image.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery-file-upload/js/jquery.fileupload-validate.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery-file-upload/js/jquery.fileupload-ui.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery-file-upload/js/jquery.fileupload-jquery-ui.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/jquery-file-upload/js/cors/jquery.xdr-transport.js"></script>
 
         <script src='//www.google.com/jsapi?autoload={"modules":[{"name":"visualization","version":"1","packages":["corechart"],"callback":"load_page_data"}]}'></script>
 
-        <script src="{{app.request.baseUrl}}/plugins/flot/jquery.flot.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/flot/jquery.flot.time.js"></script>
-        <script src="{{app.request.baseUrl}}/plugins/flot/jquery.flot.navigate.js"></script>
-
-<footer>
-    <div class="text">
-
-        <a href="http://www.infomir.eu/eng/about/profile/" target=_blank>{{ 'Powered by'|trans }} Infomir</a> -
-        <a href="http://www.infomir.eu/eng/products/iptv-stb/" target=_blank>{{ 'IPTV/OTT Set-Top Boxes'|trans }}</a> -
-        <a href="#" id="contact_support" class="contact_support" target=_blank>{{ 'Contact support'|trans }}</a> -
-        {#<a href="http://www.infomir.eu/eng/press-center/" target=_blank>{{ 'Infomir News'|trans }}</a> -#}
-        <a href="https://wiki.infomir.com/eng/stalker" target=_blank>{{ 'Documentation'|trans }}</a> -
-		 {% if attribute(app, 'allowed_locales') is defined %}
-        <div class="dropup">
-            <a id="dropdownMenu2" data-toggle="dropdown"><span class="lang-xs" lang="{{ app.language }}"></span> {{ 'Language'|trans }}</a>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2" id="allowed_locales">
-                {% for key, item in app.allowed_locales %}
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-locale="{{ item }}"><span class="lang-xs" lang="{{ item|slice(0,2) }}"></span>{{ key }}</a></li>
-                {% endfor %}
-            </ul>
-        </div> -
-        {% endif %}
-        <span id="portal_version_srt" class="text-default"></span>
-    </div>
-    <script type="text/javascript" defer="defer">
-        var words = [];
-        var lang = $.cookies.get('language');
-        $.ajax({
-            type: "GET",
-            url: "./js/js_translate.php",
-            async: false,
-            data: {language: lang},
-            dataType: "json",
-            success: function(data){
-                for (var key in data){
-                    words[key] = data[key];
-                }
-            }
-        });
-
-        $('#datatable-1').on( 'draw.dt', function () {
-            $('#wrapper').css({minHeight: heightCalculate()});
-        } );
-        if (typeof (ver) != 'undefined') {
-            $("#portal_version_srt").text(" v " + ver);
-        }
-
-        {% if attribute(app, 'new_version') is defined and app['new_version']%}
-        var update = {
-            {% for key, val in app['new_version'] %}
-            '{{ key }}': '{{ val }}'{% if not loop.last %},{% endif %}
-            {% endfor %}
-        };
-
-        if (typeof(update.version) != 'undefined' && ver != update.version) {
-            $("#portal_version_srt").after('<span id="new_version" class="text-default"><a class="text-primary" href="' + update.url + '">{{ 'Available new version'|trans }} ' + update.version + '</a></span>').after(' - ');
-        }
-        {% endif %}
-
-        $(document).on('click', '#contact_support', function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            footer_modal($(this));
-            return false
-        });
-
-        function footer_modal(obj){
-            var modalContainer;
-            if ($('#modalbox_clone').length) {
-                modalContainer = $('#modalbox_clone');
-            } else {
-                modalContainer = $('#modalbox').clone(true);
-                modalContainer.attr('id', 'modalbox_clone');
-                $('#modalbox').after(modalContainer);
-            }
-            modalContainer.find('.modal-header-name span').text('{{ 'Technical questions form'|trans }}');
-            modalContainer.find('.devoops-modal-inner').html('\n\
-                <div class="box-content">\n\
-                     <iframe src="//www.infomir.eu/eng/support/form/stalker.php?lang={{ app.language }}" width="734" height="400" frameborder="0" allowtransparency="true"></iframe>  \n\
-                </div>');
-            modalContainer.find('.devoops-modal-bottom').empty();
-            modalContainer.show();
-            obj.closest('div.open').removeClass('open');
-        }
-
-        function topModalMsg(obj){
-            if (!obj || !obj.data) {
-                obj['data'] = [];
-            }
-            var certificateCheck = localStorage.getItem('certificateCheck'), showed, cTime = new Date();
-            if (!certificateCheck) {
-                certificateCheck = {
-                    showed: {},
-                    closed: true,
-                    timestamp: 0
-                };
-            } else {
-                certificateCheck = $.parseJSON(certificateCheck);
-            }
-            showed = certificateCheck.showed;
-            for (var i in obj.data) {
-                if (obj.data[i].expires_30_days && !showed[obj.data[i].id] && (obj.data[i].cert_end * 1000) >= cTime.getTime() ) {
-                    showed[obj.data[i].id] = false;
-                    certificateCheck.closed = false;
-                }
-            }
-
-            certificateCheck.showed = showed;
-            certificateCheck.timestamp = cTime.getTime();
-            localStorage.setItem('certificateCheck', JSON.stringify(certificateCheck));
-            if (!certificateCheck.closed) {
-                createCertModal();
-            }
-        }
-
-        function createCertModal(){
-            $('body').prepend("\n\
-                    <div id='certificate_warn' class='box-content ' style='z-index: 100000; position: fixed; top: 0; left: 0; width: 100%;'>\n\
-                        <div class='row'>\n\
-                            <div class='col-xs-6 col-xs-offset-3'>\n\
-                                <h4 class='text-center'>\n\
-                                    <img src='{{app.request.baseUrl}}/img/warning-icon.png'/>\n\
-                                    &nbsp;&nbsp;\n\
-                                    <strong>{{ 'Reminder: One of your certificates is expiring'|trans }}</strong>\n\
-                                    &nbsp;&nbsp;\n\
-                                    <small><a href='{{app.request.baseUrl}}/certificates/current' class='txt-primary'>{{ 'Details'|trans }}</a></small>\n\
-                                </h4>\n\
-                            </div>\n\
-                            <div id='warn_close' class='col-xs-1 txt-center pull-right'>\n\
-                                <i class='fa fa-times'></i>\n\
-                            </div>\n\
-                        </div>\n\
-                    </div>");
-
-            $("#certificate_warn").on("click", "#warn_close i", function(){
-                var certificateCheck = localStorage.getItem('certificateCheck'), cTime = new Date();
-                if (!certificateCheck) {
-                    certificateCheck = {
-                        showed: {},
-                        closed: false,
-                        timestamp: 0
-                    };
-                } else {
-                    certificateCheck = $.parseJSON(certificateCheck);
-                }
-
-                for (var i in certificateCheck.showed) {
-                    certificateCheck.showed[i] = true;
-                }
-                certificateCheck.closed = true;
-                certificateCheck.timestamp = cTime.getTime();
-                localStorage.setItem('certificateCheck', JSON.stringify(certificateCheck));
-                $("#certificate_warn").remove();
-            });
-        }
-
-        $(document).ready(function(){
-            var certificateCheck = localStorage.getItem('certificateCheck');
-            if (!certificateCheck) {
-                certificateCheck = {
-                    showed: {},
-                    closed: false,
-                    timestamp: 0
-                };
-            } else {
-                certificateCheck = $.parseJSON(certificateCheck);
-            }
-            var cTime = new Date();
-            if ((cTime.getTime() - certificateCheck.timestamp) > 86400000 ) {
-                ajaxPostSend('{{app.request.baseUrl}}/certificates/current-list-json', {notty_check: 1}, false, false, true);
-            } else if (!certificateCheck.closed){
-                createCertModal();
-            }
-
-            {% if attribute(app, 'userlogin') is defined and app['userlogin'] == 'admin' %}
-            var opinionCheck = localStorage.getItem('opinionCheck');
-            if (!opinionCheck) {
-                ajaxPostSend('{{app.request.baseUrl}}/index/opinion-check', false, false, true);
-            } else {
-                setOpinionModal(JSON.parse(opinionCheck));
-            }
-
-            $(document).on('click', 'a[href$="auth-user-logout"]', function(){
-                localStorage.removeItem('opinionCheck');
-            });
-
-            {% endif %}
-        });
-
-    </script>
-        {% if attribute(app, 'userlogin') is defined and app['userlogin'] == 'admin' %}
-
-    <script type="text/javascript" defer="defer">
-        function setOpinionModal(data){
-            if (!data.remind) {
-                JScloseModalBox();
-                $("#modalbox .devoops-modal-header span").text("{{ 'Feedback form'|trans }}");
-                $("#modalbox .devoops-modal-inner").html($("#opinion_modal_body_template").html());
-                $("#modalbox .devoops-modal-bottom").html($("#opinion_modal_btn_template").html());
-                $("#opinion_fill").attr('href', data.link);
-                $("#modalbox").on('click', '.devoops-modal-bottom a', function(e){
-                    JScloseModalBox();
-                    ajaxPostSend('{{app.request.baseUrl}}/index/opinion-set', $(this).data(), false, false, true);
-                    if ($(this).hasClass('main_ajax')) {
-                        e.stopPropagation();
-                        e.preventDefault();
-                    }
-                });
-                $(document).on('hide', '#modalbox', function(){
-                    $(this).find('.devoops-modal-header, .devoops-modal-bottom').each(function(){
-                        if(!$(this).is(':visible')){
-                            $(this).show();
-                        }
-                    });
-                });
-                $("#modalbox").show();
-            }
-            localStorage.setItem('opinionCheck', JSON.stringify(data));
-        }
-
-        function setOpinionData(data){
-            localStorage.setItem('opinionCheck', JSON.stringify(data));
-        }
-    </script>
-
-            <script type="text/template" id="opinion_modal_body_template">
-                <div class="col-sm-4" style="margin: 0 !important; padding: 10px 20px !important;">
-                    <img src="{{app.request.baseUrl}}/img/foto_sazhienko.jpg" class="img-thumbnail">
-                </div>
-                <div class="col-sm-8 opinion_form opinion_form">
-                    <h4>{{ 'Dear user!'|trans }}</h4>
-                    <hr>
-                    <p>{{ 'We thank you for your trust and we would like to know more about your experience with Stalker Middleware. How satisfied are you with the product and what should be improved?'|trans }}</p>
-                    <p>{{ 'Please fill out the form by clicking the appropriate button below.'|trans }}</p>
-                    <br>
-                    <p>{{ 'Yours sincerely,'|trans }}
-                        <br>
-                        {{ 'Stalker Middleware Product Manager'|trans }}
-                        <br>
-                        {{ 'Alexander Sazhyienko'|trans }}
-                        <br>
-                        {{ 'and the entire development team'|trans }}</p>
-                    <br>
-                    <p style="font-style: oblique;">* {{ 'We will not disclose your personal information. The answers will not be shared with third parties'|trans }}</p>
-                </div>
-            </script>
-
-            <script type="text/template" id="opinion_modal_btn_template">
-                <div class="col-sm-9 col-sm-offset-3 opinion_form">
-                    <a id="opinion_fill" target="_blank" class="btn btn-success green col-sm-3 col-sm-offset-1 no-padding-left no-padding-right pull-right" data-opinion="fill">{{ 'Fill in the form'|trans }}</a>
-                    <a id="opinion_remind" class="btn btn-default col-sm-3 col-sm-offset-1 no-padding-left no-padding-right main_ajax pull-right" data-opinion="remind">{{ 'Remind me later'|trans }}</a>
-                    <a id="opinion_no" class="btn btn-default col-sm-3 col-sm-offset-1 no-padding-left no-padding-right main_ajax pull-right" data-opinion="no">{{ 'No, thanks'|trans }}</a>
-                </div>
-            </script>
-        {% endif %}
-</footer>
+        <script src="{{app.request_context.baseUrl}}/plugins/flot/jquery.flot.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/flot/jquery.flot.time.js"></script>
+        <script src="{{app.request_context.baseUrl}}/plugins/flot/jquery.flot.navigate.js"></script>

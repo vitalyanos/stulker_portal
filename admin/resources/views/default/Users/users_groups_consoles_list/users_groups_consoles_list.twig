@@ -7,7 +7,7 @@
     <div id="iptv_list">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/add-console-item" class="btn btn-success pull-right no_context_menu" id="add_console_item">{{ 'Add STB'|trans }}</a>
+                <a href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/add-console-item" class="btn btn-success pull-right no_context_menu" id="add_console_item">{{ 'Add STB'|trans }}</a>
             </div>
         </div>
 
@@ -50,7 +50,7 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/users-groups-consoles-list-json",
+                    "url": "{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/users-groups-consoles-list-json",
                     "data": function (d) {
                         var RegExp = /id=(\d+)/;
                         if (id = RegExp.exec(window.location.href)) {
@@ -92,7 +92,7 @@
                             uid: $('#modalbox input[name="uid"]').val()
                         };
 
-                        ajaxPostSend("{{ app.request.baseUrl }}/{{ app.controller_alias }}/check-console-item", sendData, false, false);
+                        ajaxPostSend("{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/check-console-item", sendData, false, false);
 
                     } else {
                         _this.next('div').append('<i class="txt-danger fa fa-ban"></i> {{ 'Enter the MAC-address according to the format'|trans }}').css('visibility', 'visible');
@@ -263,7 +263,7 @@
             obj.closest('div.open').removeClass('open');
         }
         function getCeils(data) {
-            var firstCeil = '<a href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/edit-users?id=' + data.uid + '">' + data.mac + '</a>';
+            var firstCeil = '<a href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/edit-users?id=' + data.uid + '">' + data.mac + '</a>';
             var secondCeil = data.uid;
             var thirdCeil = "<div class='col-xs-3 col-sm-8'>\n\
                                 <a href='#' class='dropdown-toggle no_context_menu' data-toggle='dropdown'>\n\
@@ -271,7 +271,7 @@
                                 </a>\n\
                                 <ul class='dropdown-menu pull-right'>\n\
                                     <li>\n\
-                                        <a class='main_ajax no_context_menu' href='{{ app.request.baseUrl }}/{{ app.controller_alias }}/remove-console-item' data-consoleid='" + data.stb_in_group_id + "'>\n\
+                                        <a class='main_ajax no_context_menu' href='{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/remove-console-item' data-consoleid='" + data.stb_in_group_id + "'>\n\
                                             <span> {{ 'Delete'|trans }} </span>\n\
                                         </a>\n\
                                     </li>\n\

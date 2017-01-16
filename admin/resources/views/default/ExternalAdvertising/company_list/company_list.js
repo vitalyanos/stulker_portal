@@ -1,0 +1,96 @@
+
+        function TestTable1() {
+            $('#datatable-1').on('xhr.dt', function (e, settings, json) {
+                if (typeof (json.data) == 'object') {
+                    for (var i in json.data) {
+                        json.data[i] = rowDataPrepare(json.data[i]);
+                    }
+                }
+            }).dataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax" : {
+                    "url" : "{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/company-list-json"
+                },
+                "language": {
+                    "url": "{{ app.datatable_lang_file }}"
+                },
+                {% if attribute(app, 'dropdownAttribute') is defined %}
+                {{ main_macro.get_datatable_column(app['dropdownAttribute']) }}
+                {% endif %}
+                "bFilter": true,
+                "bPaginate": true,
+                "bInfo": true,
+                "aoColumnDefs": [
+                    {className: "action-menu", "targets": [-1]},
+                    {"searchable": false, "targets": [-1, -2]},
+                    {"sortable": false, "targets": [-1]}
+                ]
+            }).prev('.dataTables_processing').hide(50);
+        }
+
+        function yelp() {
+            $(document).ready(function () {
+
+                $(document).on('click', "a.main_ajax:not([disabled])", function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    var _this = this;
+                    $("#modalbox").data('complete', 0);
+                    var sendData = $(_this).data();
+                    ajaxPostSend($(_this).attr('href'), sendData, false );
+                    $(this).closest('div.open').removeClass('open');
+                    return false;
+                });
+
+                $(document).on('click', "#modalbox, #modalbox a.close-link, #modalbox a.close-link *", function (e) {
+                    if (e.currentTarget != e.target) {
+                        return;
+                    }
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if ($("#modalbox").data('complete') && $("#modalbox").data('complete') == 1) {
+                        JScloseModalBox();
+                    } else {
+                        for (i = 0; i < 3; i++) {
+                            $('#modalbox > div').fadeTo('slow', 0.5).fadeTo('slow', 1.0);
+                        }
+                    }
+                    return false;
+                });
+
+                LoadDataTablesScripts(TestTable1);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", yelp, false);
+
+        function rowDataPrepare(item){
+
+            item.name = "<a href='{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/company-edit?id=" + item.id + "'>" + item.name + "</a>";
+
+            item.operations = "<div class='col-xs-3 col-sm-8'>\n\
+                                    <a href='#' class='dropdown-toggle no_context_menu' data-toggle='dropdown'>\n\
+                                        <i class='pull-right fa fa-cog'></i>\n\
+                                    </a>\n\
+                                    <ul class='dropdown-menu pull-right'>\n\
+                                        <li>\n\
+                                            <a href='{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/company-edit?id=" + item.id + "'>\n\
+                                                <span>{{ 'Edit'|trans }}</span>\n\
+                                            </a>\n\
+                                        </li>\n\
+                                        <li>\n\
+                                            <a class='main_ajax no_context_menu' href='{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/toggle-company-state' data-id='" + item.id + "' data-status='" + item.status + "'>\n\
+                                                <span>" + (item.status != 0 ? "{{ 'Deactivate'|trans }}" : "{{ 'Activate'|trans }}") + "</span>\n\
+                                            </a>\n\
+                                        </li>\n\
+                                        <li>\n\
+                                            <a class='main_ajax no_context_menu' href='{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/delete-company' data-id='" + item.id + "'>\n\
+                                                <span>{{ 'Delete'|trans }}</span>\n\
+                                            </a>\n\
+                                        </li>\n\
+                                    </ul>\n\
+                                </div>";
+            item.status = item.status ? "{{ 'Active'|trans }}" : "{{ 'Inactive'|trans }}";
+            return item;
+        }

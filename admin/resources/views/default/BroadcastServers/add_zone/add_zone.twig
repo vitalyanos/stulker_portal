@@ -4,7 +4,7 @@
 
 {% block content %}
     <div id="add_channel">
-        {{ form_start(app['form'], {'method': 'POST', 'action': (app.request.baseUrl ~ '/' ~ app.controller_alias  ~ '/' ~ app.action_alias) | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
+        {{ form_start(app['form'], {'method': 'POST', 'action': (app.request_context.baseUrl ~ '/' ~ app.controller_alias  ~ '/' ~ app.action_alias) | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
         <div class="bg-danger">
             <div class="bg-danger">
                 {{ form_errors(app['form']) }}
@@ -83,7 +83,7 @@
                         <div class="row">
                             <div class="pull-right">
                                 {{ form_widget(app['form'].save, { 'label': 'Save'|trans , attr: {'class': 'btn btn-success pull-right'}}) }}
-                                <a href="{{app.request.baseUrl}}/{{app.controller_alias}}/broadcast-zone-list" class="btn btn-default pull-left"> {{ 'Cancel'|trans }} </a>
+                                <a href="{{app.request_context.baseUrl}}/{{app.controller_alias}}/broadcast-zone-list" class="btn btn-default pull-left"> {{ 'Cancel'|trans }} </a>
 {#                                {{ form_widget(app['form'].reset, { 'label': ' {{ 'Cancel'|trans }} ' , attr: {'class': 'btn btn-default pull-left'}}) }}#}
                             </div>
                         </div>
@@ -101,7 +101,7 @@
                
         function yelp() {
             $(document).ready(function () {
-                $('head').append('<link href="{{ app.request.baseUrl }}/plugins/multiselect_transfer/style.css" type="text/css" rel="stylesheet" />');
+                $('head').append('<link href="{{ app.request_context.baseUrl }}/plugins/multiselect_transfer/style.css" type="text/css" rel="stylesheet" />');
 
                 $('#form_disabled_countries, #form_countries').find('option[value="0"]').remove();
 
@@ -139,3 +139,7 @@
 
     </script>
 {% endblock %}
+
+{% stylesheets 'css/*.css' filter="yui_css" output='css/min/libraries.css' %}
+<link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+{% endstylesheets %}

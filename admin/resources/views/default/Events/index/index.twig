@@ -47,7 +47,7 @@
                                         <td>{{ item.addtime|date('M d, Y H:i') }}</td>
                                         <td>{{ item.eventtime|date('M d, Y H:i') }}</td>
                                         <td>
-                                            <a href="{{ app.request.baseUrl }}/{{ app.controller_alias }}?uid={{ item.uid }}">{{ item.mac }}</a>
+                                            <a href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}?uid={{ item.uid }}">{{ item.mac }}</a>
                                         </td>
                                         <td>{{ item.event }}</td>
                                         <td>
@@ -275,7 +275,7 @@
     <script type="text/javascript" defer>
 
         function DemoSelect2() {
-            $.getScript("{{ app.request.baseUrl }}/plugins/select2/i18n/{% if app["language"] %}{{ app["language"] }}{% else %}en{% endif %}.js", function() {
+            $.getScript("{{ app.request_context.baseUrl }}/plugins/select2/i18n/{% if app["language"] %}{{ app["language"] }}{% else %}en{% endif %}.js", function() {
                 $.fn.select2.defaults.set('dropdownAutoWidth', 'false');
                 $.fn.select2.defaults.set('width', '100%');
                 $("[id^='s2_']").select2({minimumResultsForSearch: -1});
@@ -284,7 +284,7 @@
 
         function initFileUploader(){
             $('#fileupload').fileupload({
-                url: '{{ app.request.baseUrl }}/{{ app.controller_alias }}/upload-list-addresses',
+                url: '{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/upload-list-addresses',
                 type: 'POST',
                 autoUpload: true,
                 multipart: true,
@@ -320,7 +320,7 @@
                     for (var i in json.data) {
                         var uid = json.data[i].uid;
                         var mac = json.data[i].mac;
-                        json.data[i].mac = '<a href="{{ app.request.baseUrl }}/{{ app.controller_alias }}?uid=' + uid + '" >' + mac + '</a>';
+                        json.data[i].mac = '<a href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}?uid=' + uid + '" >' + mac + '</a>';
                         json.data[i].msg = '<div class="event_message">' + json.data[i].msg + '</div>';
                         json.data[i].sended = json.data[i].sended != '0' ? '<span class="">{{ 'Delivered'|trans }}</span>' : '<span class="">{{ 'Not delivered'|trans }}</span>';
                         json.data[i].ended = json.data[i].ended != '0' ? '<span class="">{{ 'Received'|trans }}</span>' : '<span class="">{{ 'Not received'|trans }}</span>';
@@ -340,7 +340,7 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": {
-                    "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/events-list-json",
+                    "url": "{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/events-list-json",
                     "data": function (d) {
                         d = dataTableDataPrepare(d);
 
@@ -411,7 +411,7 @@
                                 e.stopPropagation();
                                 e.preventDefault();
                                 var formData = $("#modalbox_ad form").serialize();
-                                ajaxPostSend("{{app.request.baseUrl}}/{{app.controller_alias}}/add-event", formData);
+                                ajaxPostSend("{{app.request_context.baseUrl}}/{{app.controller_alias}}/add-event", formData);
                                 return false;
                             }
                         });
@@ -419,7 +419,7 @@
                     $(document).on('click', "#clean_events", function (e) {
                         e.stopPropagation();
                         e.preventDefault();
-                        ajaxPostSend("{{app.request.baseUrl}}/{{app.controller_alias}}/clean-events", {uid: $(this).data('uid')});
+                        ajaxPostSend("{{app.request_context.baseUrl}}/{{app.controller_alias}}/clean-events", {uid: $(this).data('uid')});
                         return false;
                     });
 

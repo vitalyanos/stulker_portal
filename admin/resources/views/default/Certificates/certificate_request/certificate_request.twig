@@ -24,7 +24,7 @@
                 </a>
                 <div class="box-content">
     {% endif %}
-                    {{ form_start(app['form'], {'method': 'POST', 'action': (app.request.baseUrl ~ '/' ~ app.controller_alias  ~ '/certificate-request') | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
+                    {{ form_start(app['form'], {'method': 'POST', 'action': (app.request_context.baseUrl ~ '/' ~ app.controller_alias  ~ '/certificate-request') | trans, 'attr': {'class': 'form-horizontal', 'role': 'form', 'id': 'form_'}}) }}
                     <div class="bg-danger">
                         {{ form_errors(app['form']) }}
                     </div>
@@ -218,7 +218,7 @@
                                     <div class="row">
                                         <div class="pull-right">
                                             {{ form_widget(app['form'].save, { 'label': 'Request'|trans , attr: {'class': 'btn btn-success pull-right'}}) }}
-                                            <a id="form_reset" href="{{app.request.baseUrl}}/{{app.controller_alias}}" class="btn btn-default pull-right">{{ 'Cancel'|trans }}</a>
+                                            <a id="form_reset" href="{{app.request_context.baseUrl}}/{{app.controller_alias}}" class="btn btn-default pull-right">{{ 'Cancel'|trans }}</a>
                                         </div>
                                     </div>
                                 </div>
@@ -429,7 +429,7 @@
                         <div class='row'>\n\
                             <div class='col-xs-6 col-xs-offset-3'>\n\
                                 <h4 class='text-center'>\n\
-                                    <img src='{{app.request.baseUrl}}/img/warning-icon.png'/>\n\
+                                    <img src='{{app.request_context.baseUrl}}/img/warning-icon.png'/>\n\
                                     &nbsp;&nbsp;\n\
                                     <strong>" + error + "</strong>\n\
                                 </h4>\n\

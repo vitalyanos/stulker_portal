@@ -6,7 +6,7 @@
     <div id="iptv_list">
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <a href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/add-video-ads" class="btn btn-success pull-right">{{ 'Add commercial'|trans }}</a>
+                <a href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/add-video-ads" class="btn btn-success pull-right">{{ 'Add commercial'|trans }}</a>
             </div>
         </div>
         <div class="row">
@@ -50,17 +50,17 @@
                                                         </a>\n\
                                                         <ul class="dropdown-menu pull-right">\n\
                                                             <li>\n\
-                                                                <a href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/edit-video-ads?id='+id+'" >\n\
+                                                                <a href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/edit-video-ads?id='+id+'" >\n\
                                                                     <span>{{ 'Edit'|trans }}</span>\n\
                                                                 </a>\n\
                                                             </li>\n\
                                                             <li>\n\
-                                                                <a class="main_ajax no_context_menu" href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/toggle-video-ads-status" data-adsstatus="'+(status ? 0: 1)+'" data-adsid="'+id+'">\n\
+                                                                <a class="main_ajax no_context_menu" href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/toggle-video-ads-status" data-adsstatus="'+(status ? 0: 1)+'" data-adsid="'+id+'">\n\
                                                                     <span>'+(status ? "{{ 'Unpublish'|trans }}": "{{ 'Publish'|trans }}")+'</span>\n\
                                                                 </a>\n\
                                                             </li>\n\
                                                             <li>\n\
-                                                                <a class="main_ajax no_context_menu" href="{{ app.request.baseUrl }}/{{ app.controller_alias }}/remove-video-ads" data-adsid="'+id+'">\n\
+                                                                <a class="main_ajax no_context_menu" href="{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/remove-video-ads" data-adsid="'+id+'">\n\
                                                                     <span>{{ 'Delete'|trans }}</span>\n\
                                                                 </a>\n\
                                                             </li>\n\
@@ -73,7 +73,7 @@
             "processing": true,
             "serverSide": true,
             "ajax": {
-                "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/video-advertise-list-json"
+                "url": "{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/video-advertise-list-json"
             },
             "language": {
                 "url": "{{ app.datatable_lang_file }}"

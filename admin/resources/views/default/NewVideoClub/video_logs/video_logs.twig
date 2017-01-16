@@ -44,7 +44,7 @@
             "processing": true,
             "serverSide": true,
             "ajax": {
-                "url": "{{ app.request.baseUrl }}/{{ app.controller_alias }}/video-logs-json",
+                "url": "{{ app.request_context.baseUrl }}/{{ app.controller_alias }}/video-logs-json",
                 "data": function ( d ) {
                     var RegExp = /video_id=(\d+)/;
                     if (video_id = RegExp.exec(window.location.href)) {
